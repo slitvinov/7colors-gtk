@@ -742,6 +742,8 @@ void cmderror(void)
  printf("Usage: 7colors -[1|2] [c|h]\n");
  printf(" -1, -2   player 1 or 2\n");
  printf(" c, h     computer or human\n");
+ printf("Examples:\n");
+ printf("7colors -1 h -2 c\n");
  exit(0);
 
 }
