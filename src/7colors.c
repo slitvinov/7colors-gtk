@@ -56,17 +56,6 @@ typedef struct {
 
 } ttab;
 
-/*
-static char *nomecolore[]={
- "Grigio",
- "Rosso",
- "Verde",
- "Blu",
- "Ciano",
- "Magenta",
- "Giallo"
-}; */
-
 static char *nomecolore[]={
  "Gray",
  "Red",
