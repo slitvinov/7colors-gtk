@@ -4,18 +4,17 @@
 AC_PREREQ(2.60)
 
 # package author
-AC_INIT(rdf, 0.1, slitvinov@gmail.com)
+AC_INIT(7colors, 0.10, slitvinov@gmail.com)
 AC_CONFIG_SRCDIR([src/7colors.c])
 AM_INIT_AUTOMAKE(7colors, 0.1)
 
 AC_PROG_RANLIB
-#AC_PROG_LIBTOOL
 
 # Checks for programs.
 AC_PROG_CC
 
-PKG_CHECK_MODULES([GTK], gtk+-2.0)
 # Checks for libraries.
+PKG_CHECK_MODULES([GTK], gtk+-2.0)
 
 AC_OUTPUT(Makefile src/Makefile)
 AC_OUTPUT
