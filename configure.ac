@@ -6,7 +6,7 @@ AC_PREREQ(2.60)
 # package author
 AC_INIT(7colors, 0.10, slitvinov@gmail.com)
 AC_CONFIG_SRCDIR([src/7colors.c])
-AM_INIT_AUTOMAKE(7colors, 0.1)
+AM_INIT_AUTOMAKE(7colors, 0.10)
 
 AC_PROG_RANLIB
 

@@ -2242,7 +2242,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=7colors
- VERSION=0.1
+ VERSION=0.10
 
 
 cat >>confdefs.h <<_ACEOF
