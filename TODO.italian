@@ -1,0 +1,14 @@
+Ci sono molte cose da fare per migliorare 7colors:
+
+- Possibilita' di usare dimensioni della tavola di gioco personalizzate
+- Possibilita' di caricare i propri xpm
+- Gioco via rete
+- Aggiungere i menu' a tendina per cambiare opzioni senza uscire
+- i18n
+- Decidere se usare anche le librerie di Gnome
+- Leggere il libro "GTK+ / Gnome Sviluppo di Applicazioni" :-)
+- Scrivere un Makefile piu' intelligente
+- Piu' opzioni e modi di gioco
+- Dividere il codice su piu' file
+- Tradurre i commenti del codice in inglese (solo se me lo chiedera' qualcuno)
+

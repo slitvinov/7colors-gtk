@@ -1,0 +1,63 @@
+7colors 0.10 - un gioco per XWindow
+
+Copyright (C) 2000 Bellotti Stefano <signo@lugbs.linux.it>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+Descrizione
+===========
+
+7colors e' un gioco per Xwindow per uno o due giocatori, lo scopo e' di
+riuscire a colorare il 50% piu' uno dei rombi presenti sullo schermo, prima
+dell'avversario. A turno i giocatori scelgono un colore, questo si propaga dal
+rombo del proprio angolo (in basso a sinistra per il giocatore 1, in alto a
+destra per il giocatore 2) a tutti i rombi adiacenti dello stesso colore.
+
+
+Installazione
+=============
+
+E' necessario avere installato le librie GTK, per compilare il programma basta
+eseguire:
+
+$ make
+
+e poi copiare l'eseguibile ovunque si voglia.
+
+
+Utilizzo
+========
+
+7colors [-1|-2] [c|h]
+
+-1, -2   giocatore 1 o 2
+ c, h    computer o umano
+
+Per esempio 7colors -1 c -2 h comincia una nuova partita in cui il giocatore 1
+e' il computer, e il giocatore 2 l'utente.
+Il comportamento di default e' giocatore 1 umano, giocatore 2 computer.
+Se volete ottenere un effetto divertente provate 7colors -1 c -2 c :-)
+
+
+Indirizzi
+=========
+
+L'ultima versione di 7colors e' disponibile su:
+http://digilander.iol.it/sbel/7colors.html
+
+Per domande, suggerimenti o report di bug scrivete a:
+Stefano Bellotti <signo@lugbs.linux.it>
+

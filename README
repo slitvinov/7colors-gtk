@@ -1,0 +1,62 @@
+7colors 0.10 - A game for XWindow 
+
+Copyright (C) 2000 Bellotti Stefano <signo@lugbs.linux.it>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+Description
+===========
+
+7colors is a game for XWindow, for one or two players, the goal is to
+color the 50% (plus one) of the rhombs on the screen, before the other
+player does. Each turn the player choose a color, this color propagates
+from the own corner (the lower left for player 1, the upper right for
+player 2) to all the neighbour rhombs with the same color.
+
+
+Installation
+=============
+
+You need to have installed GTK library, to compile program just run:
+
+$ make
+
+and then copy the executable everywhere you want.
+
+
+Usage
+======
+
+7colors [-1|-2] [c|h]
+
+-1, -2   player 1 or 2
+c, h     computer or human
+
+i.e. 7colors -1 c -2 h starts a new game with player 1 computer and player 2
+the user.
+The default is player 1 human and player 2 computer.
+If you want something funny try 7colors -1 c -2 c :-)
+
+
+Addresses
+=========
+
+The latest version of 7colors is avaiable at:
+http://digilander.iol.it/sbel/7colors.english.html
+
+For questions, comments, bug reports write at:
+Stefano Bellotti <signo@lugbs.linux.it>
+
