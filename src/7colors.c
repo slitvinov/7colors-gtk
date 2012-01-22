@@ -725,17 +725,9 @@ void gameover(int giocatore)
  */
 void cmderror(void)
 {
- /*
- printf("Opzioni errate\n");
- printf("Utilizzo: 7colors -[1|2] [c|h]\n");
- printf(" -1, -2   giocatore 1 o 2\n");
- printf(" c, h     computer o umano\n");
- exit(0);
- */
  printf("Invalid options\n");
  printf("Usage: 7colors -[1|2] [c|h]\n");
  printf(" -1, -2   player 1 or 2\n");
  printf(" c, h     computer or human\n");
  exit(0);
-
 }
