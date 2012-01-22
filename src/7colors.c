@@ -299,10 +299,8 @@ int main (int argc, char *argv[])
   gtk_widget_show(contenitore3);
   pixmapwid = gtk_pixmap_new (rombo[i], maschera);
   gtk_widget_show(pixmapwid);
-  label = gtk_label_new (nomecolore[i]);
   gtk_widget_show(label);
   gtk_box_pack_start (GTK_BOX (contenitore3), pixmapwid, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (contenitore3), label, FALSE, FALSE, 0);
   gtk_widget_show(contenitore3);
   gtk_container_add (GTK_CONTAINER (bottonecol[i]), contenitore3);
   gtk_box_pack_start(GTK_BOX(contenitore2),bottonecol[i],TRUE,TRUE,10);
