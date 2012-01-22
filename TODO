@@ -1,13 +1,13 @@
 There are a lot of things to do for 7colors:
 
-- Use custom dimension for game table
-- Use custom xpms
-- Network play
-- Add menu
-- i18n
-- Choose to use or not the Gnome libraries 
-- Read the book "GTK+ / Gnome Application developement" :-)
-- Write a better Makefile
-- More options and game modes
-- Split code on different files
-- Comment the code in english (only if someone will ask me)
+- [ ] Use custom dimension for game table
+- [ ] Use custom xpms
+- [ ] Network play
+- [ ] Add menu
+- [ ] i18n
+- [ ] Choose to use or not the Gnome libraries 
+- [ ] Read the book "GTK+ / Gnome Application development" :-)
+- [ ] Write a better Makefile
+- [ ] More options and game modes
+- [ ] Split code on different files
+- [ ] Comment the code in English (only if someone will ask me)
