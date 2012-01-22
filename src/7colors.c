@@ -20,6 +20,7 @@
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
+#include <string.h>
 #include "rombo_grigio.xpm"
 #include "rombo_rosso.xpm"
 #include "rombo_verde.xpm"
@@ -106,6 +107,7 @@ void scrivi_perc(short int giocatore);
 void mossa_computer(void);
 void gameover(int giocatore);
 void cmderror(void);
+int leggi_config (int argc, char *argv[]);
 
 /*
  * Richiesta chiusura finestra
@@ -380,6 +382,7 @@ int leggi_config (int argc, char *argv[])
  for(i=0;i<larghezza_tab;i++) tab[i]=(ttab*)calloc(altezza_tab,sizeof(ttab));
 
  srand(time(NULL));
+ return 0;
 }
 
 /*
