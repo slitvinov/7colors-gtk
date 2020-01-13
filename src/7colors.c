@@ -8,7 +8,6 @@
 #include "magenta.xpm"
 #include "giallo.xpm"
 
-
 /* un giocatore */
 typedef struct {
 
@@ -711,21 +710,13 @@ void gameover(int giocatore)
  */
 void cmderror(void)
 {
- /*
- printf("Opzioni errate\n");
- printf("Utilizzo: 7colors -[1|2] [c|h]\n");
- printf(" -1, -2   giocatore 1 o 2\n");
- printf(" c, h     computer o umano\n");
- exit(0);
- */
- printf("Invalid options\n");
- printf("Usage: 7colors -[1|2] [c|h]\n");
- printf(" -1, -2   player 1 or 2\n");
- printf(" c, h     computer or human\n");
- printf("Examples:\n");
- printf("7colors -1 h -2 c\n");
- exit(0);
-
+  fprintf(stderr, "Invalid options\n");
+  fprintf(stderr, "Usage: 7colors -[1|2] [c|h]\n");
+  fprintf(stderr, " -1, -2   player 1 or 2\n");
+  fprintf(stderr, " c, h     computer or human\n");
+  fprintf(stderr, "Examples:\n");
+  fprintf(stderr, "7colors -1 h -2 c\n");
+  exit(0);
 }
 
 /*
