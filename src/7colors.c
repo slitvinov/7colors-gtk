@@ -1,12 +1,12 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
-#include "rombo_grigio.xpm"
-#include "rombo_rosso.xpm"
-#include "rombo_verde.xpm"
-#include "rombo_blu.xpm"
-#include "rombo_ciano.xpm"
-#include "rombo_magenta.xpm"
-#include "rombo_giallo.xpm"
+#include "grigio.xpm"
+#include "rosso.xpm"
+#include "verde.xpm"
+#include "blu.xpm"
+#include "ciano.xpm"
+#include "magenta.xpm"
+#include "giallo.xpm"
 
 
 /* un giocatore */
