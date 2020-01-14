@@ -60,20 +60,21 @@ int altezza_tab, larghezza_tab, altezza_pixel, larghezza_pixel,
     altezza_rombo, larghezza_rombo;
 short int attivo;
 
-void nuovo_gioco(void);
-void disegna(int x, int y, short int col);
 int colora(int x, int y, short int old_col, short int new_col);
-void clear(void);
 int espandi(int x, int y, short int col);
-void fill(int x, int y);
-int riempi(short int col);
-int riempi2();
-short int guadmax(short int attivo);
 int guadagno(int x, int y, short int old_col, short int new_col);
-void scrivi_perc(short int giocatore);
-void mossa_computer(void);
-void gameover(int giocatore);
+int leggi_config(int argc, char *[]);
+int riempi2();
+int riempi(short int col);
+short int guadmax(short int attivo);
+void clear(void);
 void cmderror(void);
+void disegna(int x, int y, short int col);
+void fill(int x, int y);
+void gameover(int giocatore);
+void mossa_computer(void);
+void nuovo_gioco(void);
+void scrivi_perc(short int giocatore);
 
 /*
  * Richiesta chiusura finestra
