@@ -272,17 +272,19 @@ void nuovo_gioco(void) {
 }
 
 void disegna(int x, int y, int col) {
-  int u;
-  int v;
   GdkRectangle update_rect;
-  u = x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2;
-  v = y * altezza_rombo / 2;
-  gdk_gc_set_clip_origin(miogc, u, v);
-  gdk_draw_drawable(tavolagioco, miogc, rombo[col], 0, 0, u, v, larghezza_rombo, altezza_rombo);
-  update_rect.x = u;
-  update_rect.y = v;
+  cairo_t *cr;
+  x = x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2;
+  y = y * altezza_rombo / 2;
+  update_rect.x = x;
+  update_rect.y = y;
   update_rect.width = larghezza_rombo;
   update_rect.height = altezza_rombo;
+  cr = gdk_cairo_create(tavolagioco);
+  gdk_cairo_set_source_pixbuf(cr, buf[col], x, y);
+  gdk_cairo_rectangle(cr, &update_rect);
+  cairo_paint(cr);
+  cairo_destroy(cr);
   gtk_widget_draw(canvas, &update_rect);
 }
 
