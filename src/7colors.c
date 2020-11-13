@@ -10,6 +10,7 @@
 #include <gtk/gtk.h>
 
 #define	USED(x)	if(x){}else{}
+#define SIZE(x) (int)(sizeof (x)/sizeof *(x))
 static const char *me = "7colors";
 static void usg(void) {
   fprintf(stderr, "Usage: 7colors -[1|2] [c|h]\n");
@@ -30,7 +31,7 @@ static struct {
   int col;
   int punti;
 } pl[2];
-static const char *xpm[] = {
+static char **xpm[] = {
   rombo_grigio_xpm,
   rombo_rosso_xpm,
   rombo_verde_xpm,
@@ -40,7 +41,7 @@ static const char *xpm[] = {
   rombo_giallo_xpm,
 };
 
-GtkWidget *areadisegno = NULL;
+GtkWidget *canvas = NULL;
 GdkPixmap *tavolagioco = NULL;
 GdkPixmap *rombo[7];
 GdkBitmap *maschera = NULL;
@@ -177,26 +178,26 @@ int main(int argc, char *argv[]) {
   gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[0], TRUE, TRUE, 0);
   lblpunti[1] = gtk_label_new("0\%");
   gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[1], TRUE, TRUE, 0);
-  areadisegno = gtk_drawing_area_new();
-  gtk_box_pack_start(GTK_BOX(contenitore1), areadisegno, FALSE, FALSE, 0);
+  canvas = gtk_drawing_area_new();
+  gtk_box_pack_start(GTK_BOX(contenitore1), canvas, FALSE, FALSE, 0);
   gtk_widget_show_all(window);
-  for (i = 0; i < sizeof xpm/sizeof *xpm; i++)
+  for (i = 0; i < SIZE(xpm); i++)
     rombo[i] =
       gdk_pixmap_create_from_xpm_d
-      (areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+      (canvas->window, &maschera, &canvas->style->bg[GTK_STATE_NORMAL],
        xpm[i]);
-  miogc = gdk_gc_new(areadisegno->window);
+  miogc = gdk_gc_new(canvas->window);
   gdk_gc_set_clip_mask(miogc, maschera);
   gdk_window_get_size(maschera, &larghezza_rombo, &altezza_rombo);
   altezza_pixel = mtab * altezza_rombo / 2 + altezza_rombo / 2;
   larghezza_pixel = ntab * larghezza_rombo + larghezza_rombo / 2;
-  gtk_drawing_area_size(GTK_DRAWING_AREA(areadisegno), larghezza_pixel,
+  gtk_drawing_area_size(GTK_DRAWING_AREA(canvas), larghezza_pixel,
                         altezza_pixel);
   tavolagioco =
-      gdk_pixmap_new(areadisegno->window, larghezza_pixel, altezza_pixel, -1);
+      gdk_pixmap_new(canvas->window, larghezza_pixel, altezza_pixel, -1);
   gdk_draw_rectangle(tavolagioco, window->style->black_gc, TRUE, 0, 0,
                      larghezza_pixel, altezza_pixel);
-  g_signal_connect(areadisegno, "expose_event", G_CALLBACK(expose_event), NULL);
+  g_signal_connect(canvas, "expose_event", G_CALLBACK(expose_event), NULL);
   separator = gtk_hseparator_new();
   gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
   gtk_widget_show(separator);
@@ -279,7 +280,7 @@ void disegna(int x, int y, int col) {
   update_rect.y = y * altezza_rombo / 2;
   update_rect.width = larghezza_rombo;
   update_rect.height = altezza_rombo;
-  gtk_widget_draw(areadisegno, &update_rect);
+  gtk_widget_draw(canvas, &update_rect);
 }
 
 int colora(int x, int y, int old_col, int new_col) {
