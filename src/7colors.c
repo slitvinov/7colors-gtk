@@ -272,15 +272,15 @@ void nuovo_gioco(void) {
 }
 
 void disegna(int x, int y, int col) {
+  int u;
+  int v;
   GdkRectangle update_rect;
-  gdk_gc_set_clip_origin(
-      miogc, x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2,
-      y * altezza_rombo / 2);
-  gdk_draw_drawable(tavolagioco, miogc, rombo[col], 0, 0,
-                  x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2,
-                  y * altezza_rombo / 2, larghezza_rombo, altezza_rombo);
-  update_rect.x = x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2;
-  update_rect.y = y * altezza_rombo / 2;
+  u = x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2;
+  v = y * altezza_rombo / 2;
+  gdk_gc_set_clip_origin(miogc, u, v);
+  gdk_draw_drawable(tavolagioco, miogc, rombo[col], 0, 0, u, v, larghezza_rombo, altezza_rombo);
+  update_rect.x = u;
+  update_rect.y = v;
   update_rect.width = larghezza_rombo;
   update_rect.height = altezza_rombo;
   gtk_widget_draw(canvas, &update_rect);
