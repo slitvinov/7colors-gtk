@@ -1,20 +1,11 @@
 .POSIX:
-.PHONY: clean all
+.SUFFIXES:
+.SUFFIXES: .c
 
-7CFLAGS = `pkg-config gtk+-2.0 --cflags`
-7LDFLAGS = `pkg-config gtk+-2.0 --libs`
-
-LDFLAGS =
+7FLAGS = `pkg-config gtk+-2.0 --cflags --libs`
 CFLAGS = -Og -g
 LINK = $(CC)
 
 all: 7colors
-.o:; $(LINK) $< $(LDFLAGS) $(7LDFLAGS) -o $@
-.c.o:; $(CC) $(CFLAGS) $(7CFLAGS) $< -c
-
-.c:
-%: %.c
-
-clean:; rm -f 7colors 7colors.o
-
-
+.c:; $(LINK) $< $(7FLAGS) $(LDFLAGS) -o $@
+clean:; -rm 7colors
