@@ -57,11 +57,6 @@ void fill(int x, int y);
 void mossa_computer(void);
 void nuovo_gioco(void);
 void scrivi_perc(int giocatore);
-void destroy(GtkWidget *widget, gpointer data) {
-  USED(widget);
-  USED(data);
-  gtk_main_quit();
-}
 static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
   gdk_draw_pixmap(widget->window,
                   widget->style->fg_gc[GTK_WIDGET_STATE(widget)], tavolagioco,
@@ -167,7 +162,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  g_signal_connect(GTK_OBJECT(window), "destroy", G_CALLBACK(destroy), NULL);
+  g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
   gtk_window_set_title(GTK_WINDOW(window), "7Colors");
   gtk_window_set_resizable(GTK_WINDOW(window), 0);
   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
@@ -214,7 +209,7 @@ int main(int argc, char *argv[]) {
       gdk_pixmap_new(areadisegno->window, larghezza_pixel, altezza_pixel, -1);
   gdk_draw_rectangle(tavolagioco, window->style->black_gc, TRUE, 0, 0,
                      larghezza_pixel, altezza_pixel);
-  g_signal_connect(GTK_OBJECT(areadisegno), "expose_event", G_CALLBACK(expose_event), NULL);
+  g_signal_connect(areadisegno, "expose_event", G_CALLBACK(expose_event), NULL);
   separator = gtk_hseparator_new();
   gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
   gtk_widget_show(separator);
@@ -231,7 +226,7 @@ int main(int argc, char *argv[]) {
     gtk_widget_show(contenitore3);
     gtk_container_add(GTK_CONTAINER(bottonecol[i]), contenitore3);
     gtk_box_pack_start(GTK_BOX(contenitore2), bottonecol[i], TRUE, TRUE, 10);
-    g_signal_connect(GTK_OBJECT(bottonecol[i]), "clicked", G_CALLBACK(premuto_colore), (gpointer)i);
+    g_signal_connect(bottonecol[i], "clicked", G_CALLBACK(premuto_colore), (gpointer)i);
     gtk_widget_set_sensitive(bottonecol[i], 0);
     gtk_widget_show(bottonecol[i]);
   }
@@ -243,8 +238,7 @@ int main(int argc, char *argv[]) {
   gtk_widget_show(contenitore2);
   bottone = gtk_button_new_with_label("New");
   gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
-  gtk_signal_connect(GTK_OBJECT(bottone), "clicked",
-                     GTK_SIGNAL_FUNC(nuovo_click_event), NULL);
+  g_signal_connect(bottone, "clicked", GTK_SIGNAL_FUNC(nuovo_click_event), NULL);
   gtk_widget_show(bottone);
   bottone = gtk_button_new_with_label("Exit");
   gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
