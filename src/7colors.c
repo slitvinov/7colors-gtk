@@ -65,12 +65,6 @@ static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
 
   return FALSE;
 }
-void nuovo_click_event(GtkWidget *widget, gpointer data) {
-  USED(widget);
-  USED(data)
-  nuovo_gioco();
-}
-
 void premuto_colore(GtkWidget *widget, gpointer colore) {
   USED(widget);
   gtk_widget_set_sensitive(bottonecol[pl[attivo].col], 1);
@@ -238,7 +232,7 @@ int main(int argc, char *argv[]) {
   gtk_widget_show(contenitore2);
   bottone = gtk_button_new_with_label("New");
   gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
-  g_signal_connect(bottone, "clicked", GTK_SIGNAL_FUNC(nuovo_click_event), NULL);
+  g_signal_connect(bottone, "clicked", GTK_SIGNAL_FUNC(nuovo_gioco), NULL);
   gtk_widget_show(bottone);
   bottone = gtk_button_new_with_label("Exit");
   gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
