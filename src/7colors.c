@@ -30,7 +30,15 @@ static struct {
   int col;
   int punti;
 } pl[2];
-static void gameover(void);
+static const char *xpm[] = {
+  rombo_grigio_xpm,
+  rombo_rosso_xpm,
+  rombo_verde_xpm,
+  rombo_blu_xpm,
+  rombo_ciano_xpm,
+  rombo_magenta_xpm,
+  rombo_giallo_xpm,
+};
 
 GtkWidget *areadisegno = NULL;
 GdkPixmap *tavolagioco = NULL;
@@ -45,6 +53,7 @@ int altezza_pixel, larghezza_pixel, altezza_rombo,
     larghezza_rombo;
 int attivo;
 
+static void gameover(void);
 int colora(int x, int y, int old_col, int new_col);
 int espandi(int x, int y, int col);
 int guadagno(int x, int y, int old_col, int new_col);
@@ -171,27 +180,11 @@ int main(int argc, char *argv[]) {
   areadisegno = gtk_drawing_area_new();
   gtk_box_pack_start(GTK_BOX(contenitore1), areadisegno, FALSE, FALSE, 0);
   gtk_widget_show_all(window);
-  rombo[0] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_grigio_xpm);
-  rombo[1] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_rosso_xpm);
-  rombo[2] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_verde_xpm);
-  rombo[3] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_blu_xpm);
-  rombo[4] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_ciano_xpm);
-  rombo[5] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_magenta_xpm);
-  rombo[6] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_giallo_xpm);
+  for (i = 0; i < sizeof xpm/sizeof *xpm; i++)
+    rombo[i] =
+      gdk_pixmap_create_from_xpm_d
+      (areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+       xpm[i]);
   miogc = gdk_gc_new(areadisegno->window);
   gdk_gc_set_clip_mask(miogc, maschera);
   gdk_window_get_size(maschera, &larghezza_rombo, &altezza_rombo);
