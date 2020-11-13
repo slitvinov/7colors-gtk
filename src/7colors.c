@@ -11,16 +11,16 @@
 const char *me = "7colors";
 
 enum { HUMAN, COMPUTER };
-typedef struct {
+struct tgiocatore {
   int type;
   short int col;
   int punti;
-} tgiocatore;
+};
 
-typedef struct {
+struct ttab {
   short int col;
   short int segno;
-} ttab;
+};
 
 static char *nomecolore[] = {"Gray", "Red",     "Green", "Blue",
                              "Cyan", "Magenta", "Yellow"};
@@ -34,8 +34,8 @@ GtkWidget *lblpunti[2];
 GtkWidget *bottonecol[7];
 GtkWidget *statusbar;
 
-ttab **tab;
-tgiocatore pl[2];
+struct ttab **tab;
+struct tgiocatore pl[2];
 
 int altezza_tab, larghezza_tab, altezza_pixel, larghezza_pixel, altezza_rombo,
     larghezza_rombo;
@@ -260,9 +260,9 @@ int leggi_config(int argc, char *argv[]) {
       exit(2);
       break;
     }
-  tab = (ttab **)calloc(larghezza_tab, sizeof(ttab *));
+  tab = (struct ttab **)calloc(larghezza_tab, sizeof(struct ttab *));
   for (i = 0; i < larghezza_tab; i++)
-    tab[i] = (ttab *)calloc(altezza_tab, sizeof(ttab));
+    tab[i] = (struct ttab *)calloc(altezza_tab, sizeof(struct ttab));
   srand(time(NULL));
 }
 
