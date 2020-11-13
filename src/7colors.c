@@ -8,6 +8,7 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 
+#define	USED(x)	if(x){}else{}
 const char *me = "7colors";
 
 enum { HUMAN, COMPUTER };
@@ -21,9 +22,6 @@ struct ttab {
   short int col;
   short int segno;
 };
-
-static char *nomecolore[] = {"Gray", "Red",     "Green", "Blue",
-                             "Cyan", "Magenta", "Yellow"};
 
 GtkWidget *areadisegno = NULL;
 GdkPixmap *tavolagioco = NULL;
@@ -58,10 +56,17 @@ void nuovo_gioco(void);
 void scrivi_perc(short int giocatore);
 
 gint delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
+  USED(widget);
+  USED(event);
+  USED(data);
   return (FALSE);
 }
 
-void destroy(GtkWidget *widget, gpointer data) { gtk_main_quit(); }
+void destroy(GtkWidget *widget, gpointer data) {
+  USED(widget);
+  USED(data);
+  gtk_main_quit();
+}
 static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
   gdk_draw_pixmap(widget->window,
                   widget->style->fg_gc[GTK_WIDGET_STATE(widget)], tavolagioco,
@@ -71,10 +76,13 @@ static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
   return FALSE;
 }
 void nuovo_click_event(GtkWidget *widget, gpointer data) {
+  USED(widget);
+  USED(data)
   nuovo_gioco();
 }
 
 void premuto_colore(GtkWidget *widget, gpointer colore) {
+  USED(widget);
   gtk_widget_set_sensitive(bottonecol[pl[attivo].col], 1);
   gtk_widget_set_sensitive(bottonecol[(int)colore], 0);
   clear();
@@ -209,7 +217,8 @@ int main(int argc, char *argv[]) {
 }
 
 int leggi_config(int argc, char *argv[]) {
-  int i, n;
+  USED(argc);
+  int i;
   altezza_tab = 18;
   larghezza_tab = 18;
   pl[0].type = HUMAN;
@@ -264,6 +273,7 @@ int leggi_config(int argc, char *argv[]) {
   for (i = 0; i < larghezza_tab; i++)
     tab[i] = (struct ttab *)calloc(altezza_tab, sizeof(struct ttab));
   srand(time(NULL));
+  return 0;
 }
 
 void nuovo_gioco(void) {
@@ -509,6 +519,7 @@ void mossa_computer(void) {
 }
 
 void gameover(int giocatore) {
+  USED(giocatore);
   int i;
 
   for (i = 0; i < 7; i++)
