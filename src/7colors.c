@@ -11,6 +11,8 @@
 
 #define	USED(x)	if(x){}else{}
 const char *me = "7colors";
+enum { ntab = 18, altezza_tab = 18};
+struct ttab *tab[ntab];
 
 enum { HUMAN, COMPUTER };
 struct tgiocatore {
@@ -33,17 +35,15 @@ GtkWidget *lblpunti[2];
 GtkWidget *bottonecol[7];
 GtkWidget *statusbar;
 
-struct ttab **tab;
 struct tgiocatore pl[2];
 
-int altezza_tab, larghezza_tab, altezza_pixel, larghezza_pixel, altezza_rombo,
+int altezza_pixel, larghezza_pixel, altezza_rombo,
     larghezza_rombo;
 short int attivo;
 
 int colora(int x, int y, short int old_col, short int new_col);
 int espandi(int x, int y, short int col);
 int guadagno(int x, int y, short int old_col, short int new_col);
-int leggi_config(int argc, char *[]);
 int riempi2();
 int riempi(short int col);
 short int guadmax(short int attivo);
@@ -87,17 +87,17 @@ void premuto_colore(GtkWidget *widget, gpointer colore) {
   gtk_widget_set_sensitive(bottonecol[pl[attivo].col], 1);
   gtk_widget_set_sensitive(bottonecol[(intptr_t)colore], 0);
   clear();
-  pl[attivo].punti = colora(attivo * (larghezza_tab - 1),
+  pl[attivo].punti = colora(attivo * (ntab - 1),
                             ((attivo + 1) % 2) * (altezza_tab - 1),
                             pl[attivo].col, (intptr_t)colore);
-  fill(((attivo + 1) % 2) * (larghezza_tab - 1), attivo * (altezza_tab - 1));
+  fill(((attivo + 1) % 2) * (ntab - 1), attivo * (altezza_tab - 1));
   pl[attivo].punti += riempi((intptr_t)colore);
   pl[attivo].col = (intptr_t)colore;
   scrivi_perc(attivo);
-  if (pl[attivo].punti == larghezza_tab * altezza_tab / 2 &&
-      pl[(attivo + 1) % 2].punti == larghezza_tab * altezza_tab / 2)
+  if (pl[attivo].punti == ntab * altezza_tab / 2 &&
+      pl[(attivo + 1) % 2].punti == ntab * altezza_tab / 2)
     gameover(2);
-  else if (pl[attivo].punti > larghezza_tab * altezza_tab / 2)
+  else if (pl[attivo].punti > ntab * altezza_tab / 2)
     gameover(attivo);
   else {
     attivo = (attivo + 1) % 2;
@@ -113,118 +113,7 @@ int main(int argc, char *argv[]) {
   GtkWidget *bottone;
   GtkWidget *separator;
   GtkWidget *pixmapwid;
-  GtkWidget *label;
   int i;
-  if (gtk_init_check(&argc, &argv) == 0) {
-    fprintf(stderr, "%s: fail to initialize GUI\n", me);
-    return 1;
-  }
-  leggi_config(argc, argv);
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_signal_connect(GTK_OBJECT(window), "delete_event",
-                     GTK_SIGNAL_FUNC(delete_event), NULL);
-  gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy),
-                     NULL);
-  gtk_window_set_title(GTK_WINDOW(window), "7Colors");
-  gtk_window_set_policy(GTK_WINDOW(window), 0, 0, 0); // no resize
-  gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-  gtk_widget_show(window);
-  contenitore1 = gtk_vbox_new(FALSE, 10);
-  gtk_container_add(GTK_CONTAINER(window), contenitore1);
-  gtk_widget_show(contenitore1);
-  contenitore2 = gtk_hbox_new(TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
-  gtk_widget_show(contenitore2);
-  lblpunti[0] = gtk_label_new("0\%");
-  gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[0], TRUE, TRUE, 0);
-  gtk_widget_show(lblpunti[0]);
-  lblpunti[1] = gtk_label_new("0\%");
-  gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[1], TRUE, TRUE, 0);
-  gtk_widget_show(lblpunti[1]);
-  areadisegno = gtk_drawing_area_new();
-  gtk_box_pack_start(GTK_BOX(contenitore1), areadisegno, FALSE, FALSE, 0);
-  gtk_widget_show(areadisegno);
-  rombo[0] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_grigio_xpm);
-  rombo[1] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_rosso_xpm);
-  rombo[2] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_verde_xpm);
-  rombo[3] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_blu_xpm);
-  rombo[4] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_ciano_xpm);
-  rombo[5] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_magenta_xpm);
-  rombo[6] = gdk_pixmap_create_from_xpm_d(
-      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
-      (gchar **)rombo_giallo_xpm);
-  miogc = gdk_gc_new(areadisegno->window);
-  gdk_gc_set_clip_mask(miogc, maschera);
-  gdk_window_get_size(maschera, &larghezza_rombo, &altezza_rombo);
-  altezza_pixel = altezza_tab * altezza_rombo / 2 + altezza_rombo / 2;
-  larghezza_pixel = larghezza_tab * larghezza_rombo + larghezza_rombo / 2;
-  gtk_drawing_area_size(GTK_DRAWING_AREA(areadisegno), larghezza_pixel,
-                        altezza_pixel);
-  tavolagioco =
-      gdk_pixmap_new(areadisegno->window, larghezza_pixel, altezza_pixel, -1);
-  gdk_draw_rectangle(tavolagioco, window->style->black_gc, TRUE, 0, 0,
-                     larghezza_pixel, altezza_pixel);
-  gtk_signal_connect(GTK_OBJECT(areadisegno), "expose_event",
-                     (GtkSignalFunc)expose_event, NULL);
-  separator = gtk_hseparator_new();
-  gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
-  gtk_widget_show(separator);
-  contenitore2 = gtk_hbox_new(TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
-  gtk_widget_show(contenitore2);
-  for (i = 0; i < 7; i++) {
-    bottonecol[i] = gtk_button_new();
-    contenitore3 = gtk_vbox_new(FALSE, 0);
-    gtk_widget_show(contenitore3);
-    pixmapwid = gtk_pixmap_new(rombo[i], maschera);
-    gtk_widget_show(pixmapwid);
-    gtk_widget_show(label);
-    gtk_box_pack_start(GTK_BOX(contenitore3), pixmapwid, FALSE, FALSE, 0);
-    gtk_widget_show(contenitore3);
-    gtk_container_add(GTK_CONTAINER(bottonecol[i]), contenitore3);
-    gtk_box_pack_start(GTK_BOX(contenitore2), bottonecol[i], TRUE, TRUE, 10);
-    gtk_signal_connect(GTK_OBJECT(bottonecol[i]), "clicked",
-                       GTK_SIGNAL_FUNC(premuto_colore), (gpointer)i);
-    gtk_widget_set_sensitive(bottonecol[i], 0);
-    gtk_widget_show(bottonecol[i]);
-  }
-  separator = gtk_hseparator_new();
-  gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
-  gtk_widget_show(separator);
-  contenitore2 = gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
-  gtk_widget_show(contenitore2);
-  bottone = gtk_button_new_with_label("New");
-  gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
-  gtk_signal_connect(GTK_OBJECT(bottone), "clicked",
-                     GTK_SIGNAL_FUNC(nuovo_click_event), NULL);
-  gtk_widget_show(bottone);
-  bottone = gtk_button_new_with_label("Exit");
-  gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
-  gtk_signal_connect_object(GTK_OBJECT(bottone), "clicked",
-                            GTK_SIGNAL_FUNC(gtk_widget_destroy),
-                            GTK_OBJECT(window));
-  gtk_widget_show(bottone);
-  gtk_main();
-}
-
-int leggi_config(int argc, char *argv[]) {
-  USED(argc);
-  int i;
-  altezza_tab = 18;
-  larghezza_tab = 18;
   pl[0].type = HUMAN;
   pl[1].type = COMPUTER;
   while (*++argv != NULL && argv[0][0] == '-')
@@ -273,18 +162,120 @@ int leggi_config(int argc, char *argv[]) {
       exit(2);
       break;
     }
-  tab = (struct ttab **)calloc(larghezza_tab, sizeof(struct ttab *));
-  for (i = 0; i < larghezza_tab; i++)
-    tab[i] = (struct ttab *)calloc(altezza_tab, sizeof(struct ttab));
+  if (gtk_init_check(&argc, &argv) == 0) {
+    fprintf(stderr, "%s: fail to initialize GUI\n", me);
+    return 1;
+  }
+  for (i = 0; i < ntab; i++)
+    if ((tab[i] = calloc(altezza_tab, sizeof(struct ttab))) == NULL) {
+      fprintf(stderr, "%s: fail allocate memory\n", me);
+      return 1;
+    }
   srand(time(NULL));
-  return 0;
+  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_signal_connect(GTK_OBJECT(window), "delete_event",
+                     GTK_SIGNAL_FUNC(delete_event), NULL);
+  gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy),
+                     NULL);
+  gtk_window_set_title(GTK_WINDOW(window), "7Colors");
+  gtk_window_set_policy(GTK_WINDOW(window), 0, 0, 0);
+  gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+  gtk_widget_show(window);
+  contenitore1 = gtk_vbox_new(FALSE, 10);
+  gtk_container_add(GTK_CONTAINER(window), contenitore1);
+  gtk_widget_show(contenitore1);
+  contenitore2 = gtk_hbox_new(TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
+  gtk_widget_show(contenitore2);
+  lblpunti[0] = gtk_label_new("0\%");
+  gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[0], TRUE, TRUE, 0);
+  gtk_widget_show(lblpunti[0]);
+  lblpunti[1] = gtk_label_new("0\%");
+  gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[1], TRUE, TRUE, 0);
+  gtk_widget_show(lblpunti[1]);
+  areadisegno = gtk_drawing_area_new();
+  gtk_box_pack_start(GTK_BOX(contenitore1), areadisegno, FALSE, FALSE, 0);
+  gtk_widget_show(areadisegno);
+  rombo[0] = gdk_pixmap_create_from_xpm_d(
+      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+      (gchar **)rombo_grigio_xpm);
+  rombo[1] = gdk_pixmap_create_from_xpm_d(
+      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+      (gchar **)rombo_rosso_xpm);
+  rombo[2] = gdk_pixmap_create_from_xpm_d(
+      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+      (gchar **)rombo_verde_xpm);
+  rombo[3] = gdk_pixmap_create_from_xpm_d(
+      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+      (gchar **)rombo_blu_xpm);
+  rombo[4] = gdk_pixmap_create_from_xpm_d(
+      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+      (gchar **)rombo_ciano_xpm);
+  rombo[5] = gdk_pixmap_create_from_xpm_d(
+      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+      (gchar **)rombo_magenta_xpm);
+  rombo[6] = gdk_pixmap_create_from_xpm_d(
+      areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
+      (gchar **)rombo_giallo_xpm);
+  miogc = gdk_gc_new(areadisegno->window);
+  gdk_gc_set_clip_mask(miogc, maschera);
+  gdk_window_get_size(maschera, &larghezza_rombo, &altezza_rombo);
+  altezza_pixel = altezza_tab * altezza_rombo / 2 + altezza_rombo / 2;
+  larghezza_pixel = ntab * larghezza_rombo + larghezza_rombo / 2;
+  gtk_drawing_area_size(GTK_DRAWING_AREA(areadisegno), larghezza_pixel,
+                        altezza_pixel);
+  tavolagioco =
+      gdk_pixmap_new(areadisegno->window, larghezza_pixel, altezza_pixel, -1);
+  gdk_draw_rectangle(tavolagioco, window->style->black_gc, TRUE, 0, 0,
+                     larghezza_pixel, altezza_pixel);
+  gtk_signal_connect(GTK_OBJECT(areadisegno), "expose_event",
+                     (GtkSignalFunc)expose_event, NULL);
+  separator = gtk_hseparator_new();
+  gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
+  gtk_widget_show(separator);
+  contenitore2 = gtk_hbox_new(TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
+  gtk_widget_show(contenitore2);
+  for (i = 0; i < 7; i++) {
+    bottonecol[i] = gtk_button_new();
+    contenitore3 = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(contenitore3);
+    pixmapwid = gtk_pixmap_new(rombo[i], maschera);
+    gtk_widget_show(pixmapwid);
+    gtk_box_pack_start(GTK_BOX(contenitore3), pixmapwid, FALSE, FALSE, 0);
+    gtk_widget_show(contenitore3);
+    gtk_container_add(GTK_CONTAINER(bottonecol[i]), contenitore3);
+    gtk_box_pack_start(GTK_BOX(contenitore2), bottonecol[i], TRUE, TRUE, 10);
+    gtk_signal_connect(GTK_OBJECT(bottonecol[i]), "clicked",
+                       GTK_SIGNAL_FUNC(premuto_colore), (gpointer)i);
+    gtk_widget_set_sensitive(bottonecol[i], 0);
+    gtk_widget_show(bottonecol[i]);
+  }
+  separator = gtk_hseparator_new();
+  gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
+  gtk_widget_show(separator);
+  contenitore2 = gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
+  gtk_widget_show(contenitore2);
+  bottone = gtk_button_new_with_label("New");
+  gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
+  gtk_signal_connect(GTK_OBJECT(bottone), "clicked",
+                     GTK_SIGNAL_FUNC(nuovo_click_event), NULL);
+  gtk_widget_show(bottone);
+  bottone = gtk_button_new_with_label("Exit");
+  gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
+  gtk_signal_connect_object(GTK_OBJECT(bottone), "clicked",
+                            GTK_SIGNAL_FUNC(gtk_widget_destroy),
+                            GTK_OBJECT(window));
+  gtk_widget_show(bottone);
+  gtk_main();
 }
 
 void nuovo_gioco(void) {
   int x, y, i;
   short int col;
   for (y = 0; y < altezza_tab; y++) {
-    for (x = 0; x < larghezza_tab; x++) {
+    for (x = 0; x < ntab; x++) {
       col = 7.0 * rand() / (RAND_MAX + 1.0);
       tab[x][y].col = col;
       disegna(x, y, col);
@@ -292,15 +283,15 @@ void nuovo_gioco(void) {
     }
   }
   pl[0].col = tab[0][altezza_tab - 1].col;
-  pl[1].col = tab[larghezza_tab - 1][0].col;
+  pl[1].col = tab[ntab - 1][0].col;
   if (pl[1].col == pl[0].col) {
     pl[1].col = (pl[1].col + 1) % 7 + 1;
-    tab[larghezza_tab - 1][0].col = pl[1].col;
-    disegna(larghezza_tab - 1, 0, pl[1].col);
+    tab[ntab - 1][0].col = pl[1].col;
+    disegna(ntab - 1, 0, pl[1].col);
   }
   pl[0].punti = espandi(0, altezza_tab - 1, pl[0].col);
   scrivi_perc(0);
-  pl[1].punti = espandi(larghezza_tab - 1, 0, pl[1].col);
+  pl[1].punti = espandi(ntab - 1, 0, pl[1].col);
   scrivi_perc(1);
   attivo = 0;
   for (i = 0; i < 7; i++)
@@ -328,7 +319,7 @@ void disegna(int x, int y, short int col) {
 
 int colora(int x, int y, short int old_col, short int new_col) {
   int k = 0;
-  if (x < larghezza_tab && x >= 0 && y < altezza_tab && y >= 0) {
+  if (x < ntab && x >= 0 && y < altezza_tab && y >= 0) {
     if (tab[x][y].col == old_col) {
       tab[x][y].col = new_col;
       disegna(x, y, new_col);
@@ -362,7 +353,7 @@ int colora(int x, int y, short int old_col, short int new_col) {
 
 void clear(void) {
   int i, j;
-  for (i = 0; i < larghezza_tab; i++)
+  for (i = 0; i < ntab; i++)
     for (j = 0; j < altezza_tab; j++)
       tab[i][j].segno = 0;
 }
@@ -370,7 +361,7 @@ void clear(void) {
 int espandi(int x, int y, short int col) {
   int k = 0;
 
-  if (x < larghezza_tab && x >= 0 && y < altezza_tab && y >= 0) {
+  if (x < ntab && x >= 0 && y < altezza_tab && y >= 0) {
     if (tab[x][y].col == col && tab[x][y].segno == 0) {
       tab[x][y].segno = 1;
       if (y % 2 == 0)
@@ -385,7 +376,7 @@ int espandi(int x, int y, short int col) {
 }
 
 void fill(int x, int y) {
-  if (x < larghezza_tab && x >= 0 && y < altezza_tab && y >= 0) {
+  if (x < ntab && x >= 0 && y < altezza_tab && y >= 0) {
     if (tab[x][y].segno == 0) {
       tab[x][y].segno = 1;
       if (y % 2 == 0) {
@@ -405,7 +396,7 @@ void fill(int x, int y) {
 
 int riempi(short int col) {
   int x, y, k = 0;
-  for (x = 0; x < larghezza_tab; x++) {
+  for (x = 0; x < ntab; x++) {
     for (y = 0; y < altezza_tab; y++) {
       if (tab[x][y].segno == 0) {
         k++;
@@ -426,9 +417,9 @@ short int guadmax(short int attivo) {
   for (i = 0; i < 7; i++) {
     if (i != pl[(attivo + 1) % 2].col && i != pl[attivo].col) {
       clear();
-      c = guadagno(attivo * (larghezza_tab - 1),
+      c = guadagno(attivo * (ntab - 1),
                    ((attivo + 1) % 2) * (altezza_tab - 1), pl[attivo].col, i);
-      fill(((attivo + 1) % 2) * (larghezza_tab - 1),
+      fill(((attivo + 1) % 2) * (ntab - 1),
            attivo * (altezza_tab - 1));
       c += riempi2();
 
@@ -444,7 +435,7 @@ short int guadmax(short int attivo) {
 int guadagno(int x, int y, short int old_col, short int new_col) {
   int k = 0;
 
-  if (x < larghezza_tab && x >= 0 && y < altezza_tab && y >= 0) {
+  if (x < ntab && x >= 0 && y < altezza_tab && y >= 0) {
     if (tab[x][y].col == old_col && tab[x][y].segno == 0) {
       tab[x][y].segno = 1;
       if (y % 2 == 0)
@@ -477,7 +468,7 @@ int guadagno(int x, int y, short int old_col, short int new_col) {
 int riempi2() {
   int x, y, k = 0;
 
-  for (x = 0; x < larghezza_tab; x++) {
+  for (x = 0; x < ntab; x++) {
     for (y = 0; y < altezza_tab; y++) {
       if (tab[x][y].segno == 0) {
         k++;
@@ -492,7 +483,7 @@ void scrivi_perc(short int giocatore) {
   char perc[10];
 
   sprintf(perc, "%03.1f%%",
-          pl[giocatore].punti * 100.0 / (larghezza_tab * altezza_tab));
+          pl[giocatore].punti * 100.0 / (ntab * altezza_tab));
   gtk_label_set_text((GtkLabel *)lblpunti[giocatore], perc);
 }
 
@@ -502,18 +493,18 @@ void mossa_computer(void) {
   gtk_widget_set_sensitive(bottonecol[pl[attivo].col], 1);
   gtk_widget_set_sensitive(bottonecol[(int)colore], 0);
   clear();
-  pl[attivo].punti = colora(attivo * (larghezza_tab - 1),
+  pl[attivo].punti = colora(attivo * (ntab - 1),
                             ((attivo + 1) % 2) * (altezza_tab - 1),
                             pl[attivo].col, (int)colore);
-  fill(((attivo + 1) % 2) * (larghezza_tab - 1), attivo * (altezza_tab - 1));
+  fill(((attivo + 1) % 2) * (ntab - 1), attivo * (altezza_tab - 1));
   pl[attivo].punti += riempi((int)colore);
   pl[attivo].col = (int)colore;
   scrivi_perc(attivo);
 
-  if (pl[attivo].punti == larghezza_tab * altezza_tab / 2 &&
-      pl[(attivo + 1) % 2].punti == larghezza_tab * altezza_tab / 2)
+  if (pl[attivo].punti == ntab * altezza_tab / 2 &&
+      pl[(attivo + 1) % 2].punti == ntab * altezza_tab / 2)
     gameover(2);
-  else if (pl[attivo].punti > larghezza_tab * altezza_tab / 2)
+  else if (pl[attivo].punti > ntab * altezza_tab / 2)
     gameover(attivo);
   else {
     attivo = (attivo + 1) % 2;
