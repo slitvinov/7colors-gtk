@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   g_signal_connect(GTK_OBJECT(window), "destroy", G_CALLBACK(destroy), NULL);
   gtk_window_set_title(GTK_WINDOW(window), "7Colors");
-  gtk_window_set_policy(GTK_WINDOW(window), 0, 0, 0);
+  gtk_window_set_resizable(GTK_WINDOW(window), 0);
   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
   gtk_widget_show(window);
   contenitore1 = gtk_vbox_new(FALSE, 10);
