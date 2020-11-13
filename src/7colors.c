@@ -115,7 +115,10 @@ int main(int argc, char *argv[]) {
   GtkWidget *pixmapwid;
   GtkWidget *label;
   int i;
-  gtk_init(&argc, &argv);
+  if (gtk_init_check(&argc, &argv) == 0) {
+    fprintf(stderr, "%s: fail to initialize GUI\n", me);
+    return 1;
+  }
   leggi_config(argc, argv);
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_signal_connect(GTK_OBJECT(window), "delete_event",
