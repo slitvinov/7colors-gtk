@@ -44,6 +44,7 @@ static char **xpm[] = {
 GtkWidget *canvas = NULL;
 GdkPixmap *tavolagioco = NULL;
 GdkPixmap *rombo[7];
+GdkPixbuf *buf[7];
 GdkBitmap *maschera = NULL;
 GdkGC *miogc = NULL;
 GtkWidget *lblpunti[2];
@@ -181,11 +182,13 @@ int main(int argc, char *argv[]) {
   canvas = gtk_drawing_area_new();
   gtk_box_pack_start(GTK_BOX(container1), canvas, FALSE, FALSE, 0);
   gtk_widget_show_all(window);
-  for (i = 0; i < SIZE(xpm); i++)
+  for (i = 0; i < SIZE(xpm); i++) {
+    buf[i] = gdk_pixbuf_new_from_xpm_data (xpm[i]);
     rombo[i] =
       gdk_pixmap_create_from_xpm_d
       (canvas->window, &maschera, &canvas->style->bg[GTK_STATE_NORMAL],
        xpm[i]);
+  }
   miogc = gdk_gc_new(canvas->window);
   gdk_gc_set_clip_mask(miogc, maschera);
   gdk_window_get_size(maschera, &larghezza_rombo, &altezza_rombo);
