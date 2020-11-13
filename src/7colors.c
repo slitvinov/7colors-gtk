@@ -21,7 +21,7 @@ static void usg(void) {
 }
 enum { ntab = 18, mtab = 18};
 enum { HUMAN, COMPUTER };
-struct {
+static struct {
   int col;
   int segno;
 } *tab[ntab];
@@ -30,6 +30,7 @@ static struct {
   int col;
   int punti;
 } pl[2];
+static void gameover(void);
 
 GtkWidget *areadisegno = NULL;
 GdkPixmap *tavolagioco = NULL;
@@ -53,18 +54,9 @@ int guadmax(int attivo);
 void clear(void);
 void disegna(int x, int y, int col);
 void fill(int x, int y);
-void gameover(int giocatore);
 void mossa_computer(void);
 void nuovo_gioco(void);
 void scrivi_perc(int giocatore);
-
-gint delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
-  USED(widget);
-  USED(event);
-  USED(data);
-  return (FALSE);
-}
-
 void destroy(GtkWidget *widget, gpointer data) {
   USED(widget);
   USED(data);
@@ -98,9 +90,9 @@ void premuto_colore(GtkWidget *widget, gpointer colore) {
   scrivi_perc(attivo);
   if (pl[attivo].punti == ntab * mtab / 2 &&
       pl[(attivo + 1) % 2].punti == ntab * mtab / 2)
-    gameover(2);
+    gameover();
   else if (pl[attivo].punti > ntab * mtab / 2)
-    gameover(attivo);
+    gameover();
   else {
     attivo = (attivo + 1) % 2;
     if (pl[attivo].type == COMPUTER)
@@ -164,21 +156,18 @@ int main(int argc, char *argv[]) {
       exit(2);
       break;
     }
-  if (gtk_init_check(&argc, &argv) == 0) {
-    fprintf(stderr, "%s: fail to initialize GUI\n", me);
-    return 1;
-  }
   for (i = 0; i < ntab; i++)
     if ((tab[i] = malloc(mtab * sizeof *tab[0])) == NULL) {
       fprintf(stderr, "%s: fail to allocate memory\n", me);
       return 1;
     }
   srand(time(NULL));
+  if (gtk_init_check(&argc, &argv) == 0) {
+    fprintf(stderr, "%s: fail to initialize GUI\n", me);
+    return 1;
+  }
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_signal_connect(GTK_OBJECT(window), "delete_event",
-                     GTK_SIGNAL_FUNC(delete_event), NULL);
-  gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy),
-                     NULL);
+  g_signal_connect(GTK_OBJECT(window), "destroy", G_CALLBACK(destroy), NULL);
   gtk_window_set_title(GTK_WINDOW(window), "7Colors");
   gtk_window_set_policy(GTK_WINDOW(window), 0, 0, 0);
   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
@@ -230,8 +219,7 @@ int main(int argc, char *argv[]) {
       gdk_pixmap_new(areadisegno->window, larghezza_pixel, altezza_pixel, -1);
   gdk_draw_rectangle(tavolagioco, window->style->black_gc, TRUE, 0, 0,
                      larghezza_pixel, altezza_pixel);
-  gtk_signal_connect(GTK_OBJECT(areadisegno), "expose_event",
-                     (GtkSignalFunc)expose_event, NULL);
+  g_signal_connect(GTK_OBJECT(areadisegno), "expose_event", G_CALLBACK(expose_event), NULL);
   separator = gtk_hseparator_new();
   gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
   gtk_widget_show(separator);
@@ -248,8 +236,7 @@ int main(int argc, char *argv[]) {
     gtk_widget_show(contenitore3);
     gtk_container_add(GTK_CONTAINER(bottonecol[i]), contenitore3);
     gtk_box_pack_start(GTK_BOX(contenitore2), bottonecol[i], TRUE, TRUE, 10);
-    gtk_signal_connect(GTK_OBJECT(bottonecol[i]), "clicked",
-                       GTK_SIGNAL_FUNC(premuto_colore), (gpointer)i);
+    g_signal_connect(GTK_OBJECT(bottonecol[i]), "clicked", G_CALLBACK(premuto_colore), (gpointer)i);
     gtk_widget_set_sensitive(bottonecol[i], 0);
     gtk_widget_show(bottonecol[i]);
   }
@@ -505,9 +492,9 @@ void mossa_computer(void) {
 
   if (pl[attivo].punti == ntab * mtab / 2 &&
       pl[(attivo + 1) % 2].punti == ntab * mtab / 2)
-    gameover(2);
+    gameover();
   else if (pl[attivo].punti > ntab * mtab / 2)
-    gameover(attivo);
+    gameover();
   else {
     attivo = (attivo + 1) % 2;
     if (pl[attivo].type == COMPUTER)
@@ -515,10 +502,8 @@ void mossa_computer(void) {
   }
 }
 
-void gameover(int giocatore) {
-  USED(giocatore);
+static void gameover(void) {
   int i;
-
   for (i = 0; i < 7; i++)
     gtk_widget_set_sensitive(bottonecol[i], 0);
 }
