@@ -171,22 +171,17 @@ int main(int argc, char *argv[]) {
   gtk_window_set_title(GTK_WINDOW(window), "7Colors");
   gtk_window_set_resizable(GTK_WINDOW(window), 0);
   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-  gtk_widget_show(window);
   contenitore1 = gtk_vbox_new(FALSE, 10);
   gtk_container_add(GTK_CONTAINER(window), contenitore1);
-  gtk_widget_show(contenitore1);
   contenitore2 = gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
-  gtk_widget_show(contenitore2);
   lblpunti[0] = gtk_label_new("0\%");
   gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[0], TRUE, TRUE, 0);
-  gtk_widget_show(lblpunti[0]);
   lblpunti[1] = gtk_label_new("0\%");
   gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[1], TRUE, TRUE, 0);
-  gtk_widget_show(lblpunti[1]);
   areadisegno = gtk_drawing_area_new();
   gtk_box_pack_start(GTK_BOX(contenitore1), areadisegno, FALSE, FALSE, 0);
-  gtk_widget_show(areadisegno);
+  gtk_widget_show_all(window);
   rombo[0] = gdk_pixmap_create_from_xpm_d(
       areadisegno->window, &maschera, &areadisegno->style->bg[GTK_STATE_NORMAL],
       (gchar **)rombo_grigio_xpm);
