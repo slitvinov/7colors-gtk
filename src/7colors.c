@@ -100,9 +100,9 @@ void premuto_colore(GtkWidget *widget, gpointer colore) {
 }
 int main(int argc, char *argv[]) {
   GtkWidget *window;
-  GtkWidget *contenitore1;
-  GtkWidget *contenitore2;
-  GtkWidget *contenitore3;
+  GtkWidget *container1;
+  GtkWidget *container2;
+  GtkWidget *container3;
   GtkWidget *bottone;
   GtkWidget *separator;
   GtkWidget *pixmapwid;
@@ -170,16 +170,16 @@ int main(int argc, char *argv[]) {
   gtk_window_set_title(GTK_WINDOW(window), "7Colors");
   gtk_window_set_resizable(GTK_WINDOW(window), 0);
   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-  contenitore1 = gtk_vbox_new(FALSE, 10);
-  gtk_container_add(GTK_CONTAINER(window), contenitore1);
-  contenitore2 = gtk_hbox_new(TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
+  container1 = gtk_vbox_new(FALSE, 10);
+  gtk_container_add(GTK_CONTAINER(window), container1);
+  container2 = gtk_hbox_new(TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(container1), container2, FALSE, FALSE, 0);
   lblpunti[0] = gtk_label_new("0\%");
-  gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[0], TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(container2), lblpunti[0], TRUE, TRUE, 0);
   lblpunti[1] = gtk_label_new("0\%");
-  gtk_box_pack_start(GTK_BOX(contenitore2), lblpunti[1], TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(container2), lblpunti[1], TRUE, TRUE, 0);
   canvas = gtk_drawing_area_new();
-  gtk_box_pack_start(GTK_BOX(contenitore1), canvas, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(container1), canvas, FALSE, FALSE, 0);
   gtk_widget_show_all(window);
   for (i = 0; i < SIZE(xpm); i++)
     rombo[i] =
@@ -199,37 +199,37 @@ int main(int argc, char *argv[]) {
                      larghezza_pixel, altezza_pixel);
   g_signal_connect(canvas, "expose_event", G_CALLBACK(expose_event), NULL);
   separator = gtk_hseparator_new();
-  gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(container1), separator, FALSE, TRUE, 0);
   gtk_widget_show(separator);
-  contenitore2 = gtk_hbox_new(TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
-  gtk_widget_show(contenitore2);
+  container2 = gtk_hbox_new(TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(container1), container2, FALSE, FALSE, 0);
+  gtk_widget_show(container2);
   for (i = 0; i < 7; i++) {
     bottonecol[i] = gtk_button_new();
-    contenitore3 = gtk_vbox_new(FALSE, 0);
-    gtk_widget_show(contenitore3);
+    container3 = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(container3);
     pixmapwid = gtk_pixmap_new(rombo[i], maschera);
     gtk_widget_show(pixmapwid);
-    gtk_box_pack_start(GTK_BOX(contenitore3), pixmapwid, FALSE, FALSE, 0);
-    gtk_widget_show(contenitore3);
-    gtk_container_add(GTK_CONTAINER(bottonecol[i]), contenitore3);
-    gtk_box_pack_start(GTK_BOX(contenitore2), bottonecol[i], TRUE, TRUE, 10);
+    gtk_box_pack_start(GTK_BOX(container3), pixmapwid, FALSE, FALSE, 0);
+    gtk_widget_show(container3);
+    gtk_container_add(GTK_CONTAINER(bottonecol[i]), container3);
+    gtk_box_pack_start(GTK_BOX(container2), bottonecol[i], TRUE, TRUE, 10);
     g_signal_connect(bottonecol[i], "clicked", G_CALLBACK(premuto_colore), (gpointer)i);
     gtk_widget_set_sensitive(bottonecol[i], 0);
     gtk_widget_show(bottonecol[i]);
   }
   separator = gtk_hseparator_new();
-  gtk_box_pack_start(GTK_BOX(contenitore1), separator, FALSE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(container1), separator, FALSE, TRUE, 0);
   gtk_widget_show(separator);
-  contenitore2 = gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(contenitore1), contenitore2, FALSE, FALSE, 0);
-  gtk_widget_show(contenitore2);
+  container2 = gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(container1), container2, FALSE, FALSE, 0);
+  gtk_widget_show(container2);
   bottone = gtk_button_new_with_label("New");
-  gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
+  gtk_box_pack_start(GTK_BOX(container2), bottone, TRUE, FALSE, 10);
   g_signal_connect(bottone, "clicked", GTK_SIGNAL_FUNC(nuovo_gioco), NULL);
   gtk_widget_show(bottone);
   bottone = gtk_button_new_with_label("Exit");
-  gtk_box_pack_start(GTK_BOX(contenitore2), bottone, TRUE, FALSE, 10);
+  gtk_box_pack_start(GTK_BOX(container2), bottone, TRUE, FALSE, 10);
   gtk_signal_connect_object(GTK_OBJECT(bottone), "clicked",
                             GTK_SIGNAL_FUNC(gtk_widget_destroy),
                             GTK_OBJECT(window));
