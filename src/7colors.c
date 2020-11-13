@@ -1,3 +1,5 @@
+#include <stdint.h>
+#include <stdlib.h>
 #include "blu.xpm"
 #include "ciano.xpm"
 #include "giallo.xpm"
@@ -6,7 +8,6 @@
 #include "rosso.xpm"
 #include "verde.xpm"
 #include <gtk/gtk.h>
-#include <stdlib.h>
 
 #define	USED(x)	if(x){}else{}
 const char *me = "7colors";
@@ -84,14 +85,14 @@ void nuovo_click_event(GtkWidget *widget, gpointer data) {
 void premuto_colore(GtkWidget *widget, gpointer colore) {
   USED(widget);
   gtk_widget_set_sensitive(bottonecol[pl[attivo].col], 1);
-  gtk_widget_set_sensitive(bottonecol[(int)colore], 0);
+  gtk_widget_set_sensitive(bottonecol[(intptr_t)colore], 0);
   clear();
   pl[attivo].punti = colora(attivo * (larghezza_tab - 1),
                             ((attivo + 1) % 2) * (altezza_tab - 1),
-                            pl[attivo].col, (int)colore);
+                            pl[attivo].col, (intptr_t)colore);
   fill(((attivo + 1) % 2) * (larghezza_tab - 1), attivo * (altezza_tab - 1));
-  pl[attivo].punti += riempi((int)colore);
-  pl[attivo].col = (int)colore;
+  pl[attivo].punti += riempi((intptr_t)colore);
+  pl[attivo].col = (intptr_t)colore;
   scrivi_perc(attivo);
   if (pl[attivo].punti == larghezza_tab * altezza_tab / 2 &&
       pl[(attivo + 1) % 2].punti == larghezza_tab * altezza_tab / 2)
