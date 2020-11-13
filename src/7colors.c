@@ -273,7 +273,7 @@ void disegna(int x, int y, int col) {
   gdk_gc_set_clip_origin(
       miogc, x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2,
       y * altezza_rombo / 2);
-  gdk_draw_pixmap(tavolagioco, miogc, rombo[col], 0, 0,
+  gdk_draw_drawable(tavolagioco, miogc, rombo[col], 0, 0,
                   x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2,
                   y * altezza_rombo / 2, larghezza_rombo, altezza_rombo);
   update_rect.x = x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2;
