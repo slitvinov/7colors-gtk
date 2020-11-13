@@ -45,7 +45,7 @@ GtkWidget *canvas = NULL;
 GdkPixmap *tavolagioco = NULL;
 GdkPixmap *rombo[7];
 GdkPixbuf *buf[7];
-GdkBitmap *maschera = NULL;
+GdkBitmap *mask = NULL;
 GdkGC *miogc = NULL;
 GtkWidget *lblpunti[2];
 GtkWidget *bottonecol[7];
@@ -183,15 +183,15 @@ int main(int argc, char *argv[]) {
   gtk_box_pack_start(GTK_BOX(container1), canvas, FALSE, FALSE, 0);
   gtk_widget_show_all(window);
   for (i = 0; i < SIZE(xpm); i++) {
-    buf[i] = gdk_pixbuf_new_from_xpm_data (xpm[i]);
+    buf[i] = gdk_pixbuf_new_from_xpm_data((const char **)xpm[i]);
     rombo[i] =
       gdk_pixmap_create_from_xpm_d
-      (canvas->window, &maschera, &canvas->style->bg[GTK_STATE_NORMAL],
+      (canvas->window, &mask, &canvas->style->bg[GTK_STATE_NORMAL],
        xpm[i]);
   }
   miogc = gdk_gc_new(canvas->window);
-  gdk_gc_set_clip_mask(miogc, maschera);
-  gdk_window_get_size(maschera, &larghezza_rombo, &altezza_rombo);
+  gdk_gc_set_clip_mask(miogc, mask);
+  gdk_window_get_size(mask, &larghezza_rombo, &altezza_rombo);
   altezza_pixel = mtab * altezza_rombo / 2 + altezza_rombo / 2;
   larghezza_pixel = ntab * larghezza_rombo + larghezza_rombo / 2;
   gtk_drawing_area_size(GTK_DRAWING_AREA(canvas), larghezza_pixel,
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
     bottonecol[i] = gtk_button_new();
     container3 = gtk_vbox_new(FALSE, 0);
     gtk_widget_show(container3);
-    pixmapwid = gtk_pixmap_new(rombo[i], maschera);
+    pixmapwid = gtk_pixmap_new(rombo[i], mask);
     gtk_widget_show(pixmapwid);
     gtk_box_pack_start(GTK_BOX(container3), pixmapwid, FALSE, FALSE, 0);
     gtk_widget_show(container3);
