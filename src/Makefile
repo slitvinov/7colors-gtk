@@ -4,8 +4,6 @@
 
 7FLAGS = `pkg-config gtk+-2.0 --cflags --libs`
 CFLAGS = -Og -g
-LINK = $(CC)
-
 all: 7colors
-.c:; $(LINK) $< $(7FLAGS) $(LDFLAGS) -o $@
+.c:; $(CC) $< $(CFLAGS) $(7FLAGS) $(LDFLAGS) -o $@
 clean:; -rm 7colors
