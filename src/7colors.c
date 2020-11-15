@@ -20,12 +20,12 @@ static void usg(void) {
   fprintf(stderr, "7colors -1 h -2 c\n");
   exit(1);
 }
-enum { ntab = 18, mtab = 18 };
+enum { mtab = 18, ntab = 18, mrombo = 32, nrombo = 32 };
 enum { HUMAN, COMPUTER };
 static struct {
   int col;
   int segno;
-} * tab[ntab];
+} * tab[mtab];
 static struct {
   int type;
   int col;
@@ -37,18 +37,17 @@ static char **xpm[] = {
 };
 
 GtkWidget *canvas = NULL;
-GdkPixmap *tavolagioco = NULL;
+GdkPixmap *board = NULL;
 GdkPixmap *rombo[7];
 GdkPixbuf *buf[7];
 GdkBitmap *mask = NULL;
-GdkGC *miogc = NULL;
 GtkWidget *lblpunti[2];
 GtkWidget *bottonecol[7];
 GtkWidget *statusbar;
 
-int altezza_pixel, larghezza_pixel, altezza_rombo, larghezza_rombo;
+int npixel;
+int mpixel;
 int attivo;
-
 static void gameover(void);
 static int colora(int x, int y, int old_col, int new_col);
 static int espandi(int x, int y, int col);
@@ -121,8 +120,8 @@ int main(int argc, char *argv[]) {
       exit(2);
       break;
     }
-  for (i = 0; i < ntab; i++)
-    if ((tab[i] = malloc(mtab * sizeof *tab[0])) == NULL) {
+  for (i = 0; i < mtab; i++)
+    if ((tab[i] = malloc(ntab * sizeof *tab[0])) == NULL) {
       fprintf(stderr, "%s: fail to allocate memory\n", me);
       return 1;
     }
@@ -152,17 +151,14 @@ int main(int argc, char *argv[]) {
     rombo[i] = gdk_pixmap_create_from_xpm_d(
         canvas->window, &mask, &canvas->style->bg[GTK_STATE_NORMAL], xpm[i]);
   }
-  miogc = gdk_gc_new(canvas->window);
-  gdk_gc_set_clip_mask(miogc, mask);
-  gdk_window_get_size(mask, &larghezza_rombo, &altezza_rombo);
-  altezza_pixel = mtab * altezza_rombo / 2 + altezza_rombo / 2;
-  larghezza_pixel = ntab * larghezza_rombo + larghezza_rombo / 2;
-  gtk_drawing_area_size(GTK_DRAWING_AREA(canvas), larghezza_pixel,
-                        altezza_pixel);
-  tavolagioco =
-      gdk_pixmap_new(canvas->window, larghezza_pixel, altezza_pixel, -1);
-  gdk_draw_rectangle(tavolagioco, window->style->black_gc, TRUE, 0, 0,
-                     larghezza_pixel, altezza_pixel);
+  npixel = ntab * nrombo / 2 + nrombo / 2;
+  mpixel = mtab * mrombo + mrombo / 2;
+  gtk_drawing_area_size(GTK_DRAWING_AREA(canvas), mpixel,
+                        npixel);
+  board =
+      gdk_pixmap_new(canvas->window, mpixel, npixel, -1);
+  gdk_draw_rectangle(board, window->style->black_gc, TRUE, 0, 0,
+                     mpixel, npixel);
   g_signal_connect(canvas, "expose_event", G_CALLBACK(expose_event), NULL);
   separator = gtk_hseparator_new();
   gtk_box_pack_start(GTK_BOX(container1), separator, FALSE, TRUE, 0);
@@ -207,24 +203,24 @@ int main(int argc, char *argv[]) {
 static void nuovo_gioco(void) {
   int x, y, i;
   int col;
-  for (y = 0; y < mtab; y++) {
-    for (x = 0; x < ntab; x++) {
+  for (y = 0; y < ntab; y++) {
+    for (x = 0; x < mtab; x++) {
       col = 7.0 * rand() / (RAND_MAX + 1.0);
       tab[x][y].col = col;
       disegna(x, y, col);
       tab[x][y].segno = 0;
     }
   }
-  pl[0].col = tab[0][mtab - 1].col;
-  pl[1].col = tab[ntab - 1][0].col;
+  pl[0].col = tab[0][ntab - 1].col;
+  pl[1].col = tab[mtab - 1][0].col;
   if (pl[1].col == pl[0].col) {
     pl[1].col = (pl[1].col + 1) % 7 + 1;
-    tab[ntab - 1][0].col = pl[1].col;
-    disegna(ntab - 1, 0, pl[1].col);
+    tab[mtab - 1][0].col = pl[1].col;
+    disegna(mtab - 1, 0, pl[1].col);
   }
-  pl[0].punti = espandi(0, mtab - 1, pl[0].col);
+  pl[0].punti = espandi(0, ntab - 1, pl[0].col);
   scrivi_perc(0);
-  pl[1].punti = espandi(ntab - 1, 0, pl[1].col);
+  pl[1].punti = espandi(mtab - 1, 0, pl[1].col);
   scrivi_perc(1);
   attivo = 0;
   for (i = 0; i < 7; i++)
@@ -238,13 +234,13 @@ static void nuovo_gioco(void) {
 static void disegna(int x, int y, int col) {
   GdkRectangle update_rect;
   cairo_t *cr;
-  x = x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2;
-  y = y * altezza_rombo / 2;
+  x = x * mrombo + ((y + 1) % 2) * mrombo / 2;
+  y = y * nrombo / 2;
   update_rect.x = x;
   update_rect.y = y;
-  update_rect.width = larghezza_rombo;
-  update_rect.height = altezza_rombo;
-  cr = gdk_cairo_create(tavolagioco);
+  update_rect.width = mrombo;
+  update_rect.height = nrombo;
+  cr = gdk_cairo_create(board);
   gdk_cairo_set_source_pixbuf(cr, buf[col], x, y);
   gdk_cairo_rectangle(cr, &update_rect);
   cairo_paint(cr);
@@ -254,7 +250,7 @@ static void disegna(int x, int y, int col) {
 
 static int colora(int x, int y, int old_col, int new_col) {
   int k = 0;
-  if (x < ntab && x >= 0 && y < mtab && y >= 0) {
+  if (x < mtab && x >= 0 && y < ntab && y >= 0) {
     if (tab[x][y].col == old_col) {
       tab[x][y].col = new_col;
       disegna(x, y, new_col);
@@ -288,15 +284,15 @@ static int colora(int x, int y, int old_col, int new_col) {
 
 static void clear(void) {
   int i, j;
-  for (i = 0; i < ntab; i++)
-    for (j = 0; j < mtab; j++)
+  for (i = 0; i < mtab; i++)
+    for (j = 0; j < ntab; j++)
       tab[i][j].segno = 0;
 }
 
 static int espandi(int x, int y, int col) {
   int k = 0;
 
-  if (x < ntab && x >= 0 && y < mtab && y >= 0) {
+  if (x < mtab && x >= 0 && y < ntab && y >= 0) {
     if (tab[x][y].col == col && tab[x][y].segno == 0) {
       tab[x][y].segno = 1;
       if (y % 2 == 0)
@@ -311,7 +307,7 @@ static int espandi(int x, int y, int col) {
 }
 
 void fill(int x, int y) {
-  if (x < ntab && x >= 0 && y < mtab && y >= 0) {
+  if (x < mtab && x >= 0 && y < ntab && y >= 0) {
     if (tab[x][y].segno == 0) {
       tab[x][y].segno = 1;
       if (y % 2 == 0) {
@@ -331,8 +327,8 @@ void fill(int x, int y) {
 
 static int riempi(int col) {
   int x, y, k = 0;
-  for (x = 0; x < ntab; x++) {
-    for (y = 0; y < mtab; y++) {
+  for (x = 0; x < mtab; x++) {
+    for (y = 0; y < ntab; y++) {
       if (tab[x][y].segno == 0) {
         k++;
         tab[x][y].col = col;
@@ -352,9 +348,9 @@ static int guadmax(int attivo) {
   for (i = 0; i < 7; i++) {
     if (i != pl[(attivo + 1) % 2].col && i != pl[attivo].col) {
       clear();
-      c = guadagno(attivo * (ntab - 1), ((attivo + 1) % 2) * (mtab - 1),
+      c = guadagno(attivo * (mtab - 1), ((attivo + 1) % 2) * (ntab - 1),
                    pl[attivo].col, i);
-      fill(((attivo + 1) % 2) * (ntab - 1), attivo * (mtab - 1));
+      fill(((attivo + 1) % 2) * (mtab - 1), attivo * (ntab - 1));
       c += riempi2();
 
       if (c >= c_max) {
@@ -369,7 +365,7 @@ static int guadmax(int attivo) {
 static int guadagno(int x, int y, int old_col, int new_col) {
   int k = 0;
 
-  if (x < ntab && x >= 0 && y < mtab && y >= 0) {
+  if (x < mtab && x >= 0 && y < ntab && y >= 0) {
     if (tab[x][y].col == old_col && tab[x][y].segno == 0) {
       tab[x][y].segno = 1;
       if (y % 2 == 0)
@@ -402,8 +398,8 @@ static int guadagno(int x, int y, int old_col, int new_col) {
 static int riempi2() {
   int x, y, k = 0;
 
-  for (x = 0; x < ntab; x++) {
-    for (y = 0; y < mtab; y++) {
+  for (x = 0; x < mtab; x++) {
+    for (y = 0; y < ntab; y++) {
       if (tab[x][y].segno == 0) {
         k++;
         tab[x][y].segno = 1;
@@ -416,7 +412,7 @@ static int riempi2() {
 static void scrivi_perc(int giocatore) {
   char perc[10];
 
-  sprintf(perc, "%03.1f%%", pl[giocatore].punti * 100.0 / (ntab * mtab));
+  sprintf(perc, "%03.1f%%", pl[giocatore].punti * 100.0 / (mtab * ntab));
   gtk_label_set_text((GtkLabel *)lblpunti[giocatore], perc);
 }
 
@@ -427,17 +423,17 @@ static void mossa_computer(void) {
   gtk_widget_set_sensitive(bottonecol[(int)colore], 0);
   clear();
   pl[attivo].punti =
-      colora(attivo * (ntab - 1), ((attivo + 1) % 2) * (mtab - 1),
+      colora(attivo * (mtab - 1), ((attivo + 1) % 2) * (ntab - 1),
              pl[attivo].col, (int)colore);
-  fill(((attivo + 1) % 2) * (ntab - 1), attivo * (mtab - 1));
+  fill(((attivo + 1) % 2) * (mtab - 1), attivo * (ntab - 1));
   pl[attivo].punti += riempi((int)colore);
   pl[attivo].col = (int)colore;
   scrivi_perc(attivo);
 
-  if (pl[attivo].punti == ntab * mtab / 2 &&
-      pl[(attivo + 1) % 2].punti == ntab * mtab / 2)
+  if (pl[attivo].punti == mtab * ntab / 2 &&
+      pl[(attivo + 1) % 2].punti == mtab * ntab / 2)
     gameover();
-  else if (pl[attivo].punti > ntab * mtab / 2)
+  else if (pl[attivo].punti > mtab * ntab / 2)
     gameover();
   else {
     attivo = (attivo + 1) % 2;
@@ -454,7 +450,7 @@ static void gameover(void) {
 
 static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
   gdk_draw_pixmap(widget->window,
-                  widget->style->fg_gc[GTK_WIDGET_STATE(widget)], tavolagioco,
+                  widget->style->fg_gc[GTK_WIDGET_STATE(widget)], board,
                   event->area.x, event->area.y, event->area.x, event->area.y,
                   event->area.width, event->area.height);
 
@@ -467,16 +463,16 @@ static void premuto_colore(GtkWidget *widget, gpointer colore) {
   gtk_widget_set_sensitive(bottonecol[(intptr_t)colore], 0);
   clear();
   pl[attivo].punti =
-      colora(attivo * (ntab - 1), ((attivo + 1) % 2) * (mtab - 1),
+      colora(attivo * (mtab - 1), ((attivo + 1) % 2) * (ntab - 1),
              pl[attivo].col, (intptr_t)colore);
-  fill(((attivo + 1) % 2) * (ntab - 1), attivo * (mtab - 1));
+  fill(((attivo + 1) % 2) * (mtab - 1), attivo * (ntab - 1));
   pl[attivo].punti += riempi((intptr_t)colore);
   pl[attivo].col = (intptr_t)colore;
   scrivi_perc(attivo);
-  if (pl[attivo].punti == ntab * mtab / 2 &&
-      pl[(attivo + 1) % 2].punti == ntab * mtab / 2)
+  if (pl[attivo].punti == mtab * ntab / 2 &&
+      pl[(attivo + 1) % 2].punti == mtab * ntab / 2)
     gameover();
-  else if (pl[attivo].punti > ntab * mtab / 2)
+  else if (pl[attivo].punti > mtab * ntab / 2)
     gameover();
   else {
     attivo = (attivo + 1) % 2;
