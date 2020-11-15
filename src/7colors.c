@@ -36,8 +36,8 @@ static char **xpm[] = {
     rombo_ciano_xpm,  rombo_magenta_xpm, rombo_giallo_xpm,
 };
 
-GtkWidget *canvas = NULL;
-GdkPixmap *board = NULL;
+GtkWidget *canvas;
+GdkPixmap *board;
 GdkPixmap *rombo[7];
 GdkPixbuf *buf[7];
 GdkBitmap *mask = NULL;
@@ -153,8 +153,6 @@ int main(int argc, char *argv[]) {
                         npixel);
   board =
       gdk_pixmap_new(canvas->window, mpixel, npixel, -1);
-  gdk_draw_rectangle(board, window->style->black_gc, TRUE, 0, 0,
-                     mpixel, npixel);
   g_signal_connect(canvas, "expose_event", G_CALLBACK(expose_event), NULL);
   separator = gtk_hseparator_new();
   gtk_box_pack_start(GTK_BOX(container1), separator, FALSE, TRUE, 0);
@@ -232,7 +230,7 @@ static void disegna(int x, int y, int col) {
   update_rect.y = y;
   update_rect.width = mrombo;
   update_rect.height = nrombo;
-  cr = gdk_cairo_create(board);
+  cr = gdk_cairo_create(GDK_DRAWABLE(board));
   gdk_cairo_set_source_pixbuf(cr, buf[col], x, y);
   gdk_cairo_rectangle(cr, &update_rect);
   cairo_paint(cr);
