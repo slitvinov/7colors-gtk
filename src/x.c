@@ -1,15 +1,7 @@
-#include "blu.xpm"
-#include "ciano.xpm"
-#include "giallo.xpm"
-#include "grigio.xpm"
-#include "magenta.xpm"
-#include "rosso.xpm"
-#include "verde.xpm"
-#include <stdint.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
-
+#include <xcb/xcb.h>
 #define	USED(x)	if(x){}else{}
 #define SIZE(x) (int)(sizeof(x) / sizeof *(x))
 static const char *me = "7colors";
@@ -21,23 +13,17 @@ static void usg(void) {
   fprintf(stderr, "7colors -1 h -2 c\n");
   exit(1);
 }
-enum { mtab = 18, ntab = 18, mrombo = 32, nrombo = 32, npixel = ntab * nrombo / 2 + nrombo / 2, mpixel = mtab * mrombo + mrombo / 2 };
 enum { HUMAN, COMPUTER };
-static struct {
-  int col;
-  int segno;
-} * tab[mtab];
-static struct {
-  int type;
-  int col;
-  int punti;
-} pl[2];
-static char **xpm[] = {
-    rombo_grigio_xpm, rombo_rosso_xpm,   rombo_verde_xpm,  rombo_blu_xpm,
-    rombo_ciano_xpm,  rombo_magenta_xpm, rombo_giallo_xpm,
-};
-
+static struct { int type; } pl[2];
 int main(int argc, char *argv[]) {
+  xcb_connection_t *c;
+  const xcb_setup_t *s;
+  xcb_screen_t *screen;
+  xcb_screen_iterator_t iter;
+  xcb_window_t win;
+  int screen_count;
+  int screen_default;
+
   USED(argc);
   pl[0].type = HUMAN;
   pl[1].type = COMPUTER;
@@ -87,4 +73,40 @@ int main(int argc, char *argv[]) {
       exit(2);
       break;
     }
+
+  c = xcb_connect(NULL, &screen_default);
+  if (xcb_connection_has_error(c) != 0) {
+    fprintf(stderr, "%s: can't connect to X display\n", me);
+    exit(2);
+  }
+  s = xcb_get_setup(c);
+  screen_count = xcb_setup_roots_length(s);
+  iter = xcb_setup_roots_iterator(s);
+  for (; iter.rem; --screen_default, xcb_screen_next(&iter))
+    if (screen_default == 0) {
+      screen = iter.data;
+      break;
+    }
+  win = xcb_generate_id(c);
+  /* Create the window */
+  xcb_create_window(c,                    /* Connection          */
+                    XCB_COPY_FROM_PARENT, /* depth (same as root)*/
+                    win,                  /* window Id           */
+                    screen->root,         /* parent window       */
+                    0, 0,                 /* x, y                */
+                    screen->width_in_pixels / 2, screen->height_in_pixels / 3,
+                    10,                            /* border_width        */
+                    XCB_WINDOW_CLASS_INPUT_OUTPUT, /* class               */
+                    screen->root_visual,           /* visual              */
+                    0, NULL);                      /* masks, not used yet */
+  /* Map the window on the screen */
+  xcb_map_window(c, win);
+  xcb_flush(c);
+  fprintf(stderr, "screen_count: %d\n", screen_count);
+  fprintf(stderr, "screen_default: %d\n", screen_default);
+  printf("width: %d\n", screen->width_in_pixels);
+  printf("height: %d\n", screen->height_in_pixels);
+  getc(stdin);
+  xcb_disconnect(c);
+  srand(time(NULL));
 }
