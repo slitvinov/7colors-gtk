@@ -1,5 +1,3 @@
-#include <stdint.h>
-#include <stdlib.h>
 #include "blu.xpm"
 #include "ciano.xpm"
 #include "giallo.xpm"
@@ -8,9 +6,11 @@
 #include "rosso.xpm"
 #include "verde.xpm"
 #include <gtk/gtk.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #define	USED(x)	if(x){}else{}
-#define SIZE(x) (int)(sizeof (x)/sizeof *(x))
+#define SIZE(x) (int)(sizeof(x) / sizeof *(x))
 static const char *me = "7colors";
 static void usg(void) {
   fprintf(stderr, "Usage: 7colors -[1|2] [c|h]\n");
@@ -20,25 +20,20 @@ static void usg(void) {
   fprintf(stderr, "7colors -1 h -2 c\n");
   exit(1);
 }
-enum { ntab = 18, mtab = 18};
+enum { ntab = 18, mtab = 18 };
 enum { HUMAN, COMPUTER };
 static struct {
   int col;
   int segno;
-} *tab[ntab];
+} * tab[ntab];
 static struct {
   int type;
   int col;
   int punti;
 } pl[2];
 static char **xpm[] = {
-  rombo_grigio_xpm,
-  rombo_rosso_xpm,
-  rombo_verde_xpm,
-  rombo_blu_xpm,
-  rombo_ciano_xpm,
-  rombo_magenta_xpm,
-  rombo_giallo_xpm,
+    rombo_grigio_xpm, rombo_rosso_xpm,   rombo_verde_xpm,  rombo_blu_xpm,
+    rombo_ciano_xpm,  rombo_magenta_xpm, rombo_giallo_xpm,
 };
 
 GtkWidget *canvas = NULL;
@@ -51,54 +46,24 @@ GtkWidget *lblpunti[2];
 GtkWidget *bottonecol[7];
 GtkWidget *statusbar;
 
-int altezza_pixel, larghezza_pixel, altezza_rombo,
-    larghezza_rombo;
+int altezza_pixel, larghezza_pixel, altezza_rombo, larghezza_rombo;
 int attivo;
 
 static void gameover(void);
-int colora(int x, int y, int old_col, int new_col);
-int espandi(int x, int y, int col);
-int guadagno(int x, int y, int old_col, int new_col);
-int riempi2();
-int riempi(int col);
-int guadmax(int attivo);
-void clear(void);
-void disegna(int x, int y, int col);
-void fill(int x, int y);
-void mossa_computer(void);
-void nuovo_gioco(void);
-void scrivi_perc(int giocatore);
-static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
-  gdk_draw_pixmap(widget->window,
-                  widget->style->fg_gc[GTK_WIDGET_STATE(widget)], tavolagioco,
-                  event->area.x, event->area.y, event->area.x, event->area.y,
-                  event->area.width, event->area.height);
-
-  return FALSE;
-}
-void premuto_colore(GtkWidget *widget, gpointer colore) {
-  USED(widget);
-  gtk_widget_set_sensitive(bottonecol[pl[attivo].col], 1);
-  gtk_widget_set_sensitive(bottonecol[(intptr_t)colore], 0);
-  clear();
-  pl[attivo].punti = colora(attivo * (ntab - 1),
-                            ((attivo + 1) % 2) * (mtab - 1),
-                            pl[attivo].col, (intptr_t)colore);
-  fill(((attivo + 1) % 2) * (ntab - 1), attivo * (mtab - 1));
-  pl[attivo].punti += riempi((intptr_t)colore);
-  pl[attivo].col = (intptr_t)colore;
-  scrivi_perc(attivo);
-  if (pl[attivo].punti == ntab * mtab / 2 &&
-      pl[(attivo + 1) % 2].punti == ntab * mtab / 2)
-    gameover();
-  else if (pl[attivo].punti > ntab * mtab / 2)
-    gameover();
-  else {
-    attivo = (attivo + 1) % 2;
-    if (pl[attivo].type == COMPUTER)
-      mossa_computer();
-  }
-}
+static int colora(int x, int y, int old_col, int new_col);
+static int espandi(int x, int y, int col);
+static int guadagno(int x, int y, int old_col, int new_col);
+static int riempi2();
+static int riempi(int col);
+static int guadmax(int attivo);
+static void clear(void);
+static void disegna(int x, int y, int col);
+static void fill(int x, int y);
+static void mossa_computer(void);
+static void nuovo_gioco(void);
+static void scrivi_perc(int giocatore);
+static gint expose_event(GtkWidget *widget, GdkEventExpose *event);
+static void premuto_colore(GtkWidget *widget, gpointer colore);
 int main(int argc, char *argv[]) {
   GtkWidget *window;
   GtkWidget *container1;
@@ -184,10 +149,8 @@ int main(int argc, char *argv[]) {
   gtk_widget_show_all(window);
   for (i = 0; i < SIZE(xpm); i++) {
     buf[i] = gdk_pixbuf_new_from_xpm_data((const char **)xpm[i]);
-    rombo[i] =
-      gdk_pixmap_create_from_xpm_d
-      (canvas->window, &mask, &canvas->style->bg[GTK_STATE_NORMAL],
-       xpm[i]);
+    rombo[i] = gdk_pixmap_create_from_xpm_d(
+        canvas->window, &mask, &canvas->style->bg[GTK_STATE_NORMAL], xpm[i]);
   }
   miogc = gdk_gc_new(canvas->window);
   gdk_gc_set_clip_mask(miogc, mask);
@@ -217,7 +180,8 @@ int main(int argc, char *argv[]) {
     gtk_widget_show(container3);
     gtk_container_add(GTK_CONTAINER(bottonecol[i]), container3);
     gtk_box_pack_start(GTK_BOX(container2), bottonecol[i], TRUE, TRUE, 10);
-    g_signal_connect(bottonecol[i], "clicked", G_CALLBACK(premuto_colore), (gpointer)i);
+    g_signal_connect(bottonecol[i], "clicked", G_CALLBACK(premuto_colore),
+                     (void *)(intptr_t)i);
     gtk_widget_set_sensitive(bottonecol[i], 0);
     gtk_widget_show(bottonecol[i]);
   }
@@ -240,7 +204,7 @@ int main(int argc, char *argv[]) {
   gtk_main();
 }
 
-void nuovo_gioco(void) {
+static void nuovo_gioco(void) {
   int x, y, i;
   int col;
   for (y = 0; y < mtab; y++) {
@@ -271,7 +235,7 @@ void nuovo_gioco(void) {
     mossa_computer();
 }
 
-void disegna(int x, int y, int col) {
+static void disegna(int x, int y, int col) {
   GdkRectangle update_rect;
   cairo_t *cr;
   x = x * larghezza_rombo + ((y + 1) % 2) * larghezza_rombo / 2;
@@ -288,7 +252,7 @@ void disegna(int x, int y, int col) {
   gtk_widget_draw(canvas, &update_rect);
 }
 
-int colora(int x, int y, int old_col, int new_col) {
+static int colora(int x, int y, int old_col, int new_col) {
   int k = 0;
   if (x < ntab && x >= 0 && y < mtab && y >= 0) {
     if (tab[x][y].col == old_col) {
@@ -322,14 +286,14 @@ int colora(int x, int y, int old_col, int new_col) {
   return k;
 }
 
-void clear(void) {
+static void clear(void) {
   int i, j;
   for (i = 0; i < ntab; i++)
     for (j = 0; j < mtab; j++)
       tab[i][j].segno = 0;
 }
 
-int espandi(int x, int y, int col) {
+static int espandi(int x, int y, int col) {
   int k = 0;
 
   if (x < ntab && x >= 0 && y < mtab && y >= 0) {
@@ -365,7 +329,7 @@ void fill(int x, int y) {
   }
 }
 
-int riempi(int col) {
+static int riempi(int col) {
   int x, y, k = 0;
   for (x = 0; x < ntab; x++) {
     for (y = 0; y < mtab; y++) {
@@ -379,7 +343,7 @@ int riempi(int col) {
   return k;
 }
 
-int guadmax(int attivo) {
+static int guadmax(int attivo) {
   int imax, i;
   int c_max, c;
 
@@ -388,10 +352,9 @@ int guadmax(int attivo) {
   for (i = 0; i < 7; i++) {
     if (i != pl[(attivo + 1) % 2].col && i != pl[attivo].col) {
       clear();
-      c = guadagno(attivo * (ntab - 1),
-                   ((attivo + 1) % 2) * (mtab - 1), pl[attivo].col, i);
-      fill(((attivo + 1) % 2) * (ntab - 1),
-           attivo * (mtab - 1));
+      c = guadagno(attivo * (ntab - 1), ((attivo + 1) % 2) * (mtab - 1),
+                   pl[attivo].col, i);
+      fill(((attivo + 1) % 2) * (ntab - 1), attivo * (mtab - 1));
       c += riempi2();
 
       if (c >= c_max) {
@@ -403,7 +366,7 @@ int guadmax(int attivo) {
   return imax;
 }
 
-int guadagno(int x, int y, int old_col, int new_col) {
+static int guadagno(int x, int y, int old_col, int new_col) {
   int k = 0;
 
   if (x < ntab && x >= 0 && y < mtab && y >= 0) {
@@ -436,7 +399,7 @@ int guadagno(int x, int y, int old_col, int new_col) {
   return k;
 }
 
-int riempi2() {
+static int riempi2() {
   int x, y, k = 0;
 
   for (x = 0; x < ntab; x++) {
@@ -450,23 +413,22 @@ int riempi2() {
   return k;
 }
 
-void scrivi_perc(int giocatore) {
+static void scrivi_perc(int giocatore) {
   char perc[10];
 
-  sprintf(perc, "%03.1f%%",
-          pl[giocatore].punti * 100.0 / (ntab * mtab));
+  sprintf(perc, "%03.1f%%", pl[giocatore].punti * 100.0 / (ntab * mtab));
   gtk_label_set_text((GtkLabel *)lblpunti[giocatore], perc);
 }
 
-void mossa_computer(void) {
+static void mossa_computer(void) {
   int colore;
   colore = guadmax(attivo);
   gtk_widget_set_sensitive(bottonecol[pl[attivo].col], 1);
   gtk_widget_set_sensitive(bottonecol[(int)colore], 0);
   clear();
-  pl[attivo].punti = colora(attivo * (ntab - 1),
-                            ((attivo + 1) % 2) * (mtab - 1),
-                            pl[attivo].col, (int)colore);
+  pl[attivo].punti =
+      colora(attivo * (ntab - 1), ((attivo + 1) % 2) * (mtab - 1),
+             pl[attivo].col, (int)colore);
   fill(((attivo + 1) % 2) * (ntab - 1), attivo * (mtab - 1));
   pl[attivo].punti += riempi((int)colore);
   pl[attivo].col = (int)colore;
@@ -490,3 +452,35 @@ static void gameover(void) {
     gtk_widget_set_sensitive(bottonecol[i], 0);
 }
 
+static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
+  gdk_draw_pixmap(widget->window,
+                  widget->style->fg_gc[GTK_WIDGET_STATE(widget)], tavolagioco,
+                  event->area.x, event->area.y, event->area.x, event->area.y,
+                  event->area.width, event->area.height);
+
+  return FALSE;
+}
+
+static void premuto_colore(GtkWidget *widget, gpointer colore) {
+  USED(widget);
+  gtk_widget_set_sensitive(bottonecol[pl[attivo].col], 1);
+  gtk_widget_set_sensitive(bottonecol[(intptr_t)colore], 0);
+  clear();
+  pl[attivo].punti =
+      colora(attivo * (ntab - 1), ((attivo + 1) % 2) * (mtab - 1),
+             pl[attivo].col, (intptr_t)colore);
+  fill(((attivo + 1) % 2) * (ntab - 1), attivo * (mtab - 1));
+  pl[attivo].punti += riempi((intptr_t)colore);
+  pl[attivo].col = (intptr_t)colore;
+  scrivi_perc(attivo);
+  if (pl[attivo].punti == ntab * mtab / 2 &&
+      pl[(attivo + 1) % 2].punti == ntab * mtab / 2)
+    gameover();
+  else if (pl[attivo].punti > ntab * mtab / 2)
+    gameover();
+  else {
+    attivo = (attivo + 1) % 2;
+    if (pl[attivo].type == COMPUTER)
+      mossa_computer();
+  }
+}
