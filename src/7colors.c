@@ -20,7 +20,7 @@ static void usg(void) {
   fprintf(stderr, "7colors -1 h -2 c\n");
   exit(1);
 }
-enum { mtab = 18, ntab = 18, mrombo = 32, nrombo = 32 };
+enum { mtab = 18, ntab = 18, mrombo = 32, nrombo = 32, npixel = ntab * nrombo / 2 + nrombo / 2, mpixel = mtab * mrombo + mrombo / 2 };
 enum { HUMAN, COMPUTER };
 static struct {
   int col;
@@ -45,8 +45,6 @@ GtkWidget *lblpunti[2];
 GtkWidget *bottonecol[7];
 GtkWidget *statusbar;
 
-int npixel;
-int mpixel;
 int attivo;
 static void gameover(void);
 static int colora(int x, int y, int old_col, int new_col);
@@ -151,8 +149,6 @@ int main(int argc, char *argv[]) {
     rombo[i] = gdk_pixmap_create_from_xpm_d(
         canvas->window, &mask, &canvas->style->bg[GTK_STATE_NORMAL], xpm[i]);
   }
-  npixel = ntab * nrombo / 2 + nrombo / 2;
-  mpixel = mtab * mrombo + mrombo / 2;
   gtk_drawing_area_size(GTK_DRAWING_AREA(canvas), mpixel,
                         npixel);
   board =
