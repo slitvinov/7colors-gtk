@@ -8,6 +8,8 @@
 #include <gtk/gtk.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 
 #define	USED(x)	if(x){}else{}
 #define SIZE(x) (int)(sizeof(x) / sizeof *(x))
