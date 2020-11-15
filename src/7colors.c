@@ -161,22 +161,18 @@ int main(int argc, char *argv[]) {
   gtk_widget_show(separator);
   container2 = gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start(GTK_BOX(container1), container2, FALSE, FALSE, 0);
-  gtk_widget_show(container2);
   for (i = 0; i < 7; i++) {
     bottonecol[i] = gtk_button_new();
     container3 = gtk_vbox_new(FALSE, 0);
-    gtk_widget_show(container3);
     pixmapwid = gtk_pixmap_new(rombo[i], mask);
-    gtk_widget_show(pixmapwid);
     gtk_box_pack_start(GTK_BOX(container3), pixmapwid, FALSE, FALSE, 0);
-    gtk_widget_show(container3);
     gtk_container_add(GTK_CONTAINER(bottonecol[i]), container3);
     gtk_box_pack_start(GTK_BOX(container2), bottonecol[i], TRUE, TRUE, 10);
     g_signal_connect(bottonecol[i], "clicked", G_CALLBACK(premuto_colore),
                      (void *)(intptr_t)i);
     gtk_widget_set_sensitive(bottonecol[i], 0);
-    gtk_widget_show(bottonecol[i]);
   }
+  gtk_widget_show_all(container2);
   separator = gtk_hseparator_new();
   gtk_box_pack_start(GTK_BOX(container1), separator, FALSE, TRUE, 0);
   gtk_widget_show(separator);
