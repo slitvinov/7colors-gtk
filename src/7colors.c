@@ -59,7 +59,7 @@ static void fill(int, int);
 static void mossa_computer(void);
 static void nuovo_gioco(void);
 static void scrivi_perc(int);
-static gint expose_event(GtkWidget*, GdkEventExpose *);
+static int expose_event(GtkWidget*, GdkEventExpose *);
 static void premuto_colore(GtkWidget *, gpointer);
 int main(int argc, char *argv[]) {
   GtkWidget *window;
@@ -149,8 +149,7 @@ int main(int argc, char *argv[]) {
     rombo[i] = gdk_pixmap_create_from_xpm_d(
         canvas->window, &mask, &canvas->style->bg[GTK_STATE_NORMAL], xpm[i]);
   }
-  gtk_drawing_area_size(GTK_DRAWING_AREA(canvas), mpixel,
-                        npixel);
+  gtk_widget_set_size_request(canvas, mpixel, npixel);
   board =
       gdk_pixmap_new(canvas->window, mpixel, npixel, -1);
   g_signal_connect(canvas, "expose_event", G_CALLBACK(expose_event), NULL);
@@ -438,13 +437,13 @@ static void gameover(void) {
     gtk_widget_set_sensitive(bottonecol[i], 0);
 }
 
-static gint expose_event(GtkWidget *widget, GdkEventExpose *event) {
+static int expose_event(GtkWidget *widget, GdkEventExpose *event) {
   gdk_draw_pixmap(widget->window,
                   widget->style->fg_gc[GTK_WIDGET_STATE(widget)], board,
                   event->area.x, event->area.y, event->area.x, event->area.y,
                   event->area.width, event->area.height);
 
-  return FALSE;
+  return 0;
 }
 
 static void premuto_colore(GtkWidget *widget, gpointer colore) {
