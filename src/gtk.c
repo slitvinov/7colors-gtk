@@ -38,16 +38,16 @@ static char **xpm[] = {
     rombo_ciano_xpm,  rombo_magenta_xpm, rombo_giallo_xpm,
 };
 
-GtkWidget *canvas;
-GdkPixmap *board;
-GdkPixmap *rombo[7];
-GdkPixbuf *buf[7];
-GdkBitmap *mask = NULL;
-GtkWidget *lblpunti[2];
-GtkWidget *bottonecol[7];
-GtkWidget *statusbar;
+static GtkWidget *canvas;
+static GdkPixmap *board;
+static GdkPixmap *rombo[7];
+static GdkPixbuf *buf[7];
+static GdkBitmap *mask = NULL;
+static GtkWidget *lblpunti[2];
+static GtkWidget *bottonecol[7];
+static GtkWidget *statusbar;
 
-int attivo;
+static int attivo;
 static void gameover(void);
 static int colora(int, int, int, int);
 static int espandi(int, int, int);
