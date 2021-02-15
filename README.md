@@ -1,6 +1,6 @@
 # Intro
 
-7colors game for XWindow. See [src/README](src/README).
+[7colors](https://en.wikipedia.org/wiki/7_Colors) game. See [src/README](src/README).
 
 <p align="center"><img src="img/screen.png"/></p>
 
