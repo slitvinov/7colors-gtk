@@ -16,5 +16,10 @@ Build and run
 
 ```
 $ (cd src && make)
-$ src/gtk
+$ src/gtk -h
+Usage: 7colors -[1|2] [c|h]
+ -1, -2   player 1 or 2
+ c, h     computer or human
+Examples:
+7colors -1 h -2 c
 ```
