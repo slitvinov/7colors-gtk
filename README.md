@@ -2,6 +2,8 @@
 
 7colors game for XWindow. See [src/README](src/README).
 
+<p align="center"><img src="img/screen.png"/></p>
+
 # Install
 
 Requires GTK 2. To install on debian:
